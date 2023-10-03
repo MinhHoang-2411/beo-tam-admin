@@ -9,9 +9,10 @@ const AuthPage = () => {
         top: "50%",
         left: "50%",
         transform: "translate(-50%,-50%)",
-        width: "500px",
+        width: "400px",
         borderRadius: "8px",
         padding: "12px",
+        background: "#a7ffe11c",
       }}
     >
       <Login />
