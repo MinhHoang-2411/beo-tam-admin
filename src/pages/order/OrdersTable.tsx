@@ -40,6 +40,7 @@ export default function OrdersTable() {
   const [listStatusObject] = useState<any>({
     completed: "Đã hoàn thành",
     failed: "Thất bại",
+    processing : "Đang triển khai"
   });
   const [listChecked, setListChecked] = useState<any[]>([]);
   const isCheckAll = useMemo(
