@@ -16,7 +16,7 @@ import PrivateRoutes from "./routes/PrivateRoutes";
 const App = () => {
   const mode = useAppSelector((state) => state.layout.theme);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
-  const isAuth = localStorage.getItem("fakeToken");
+  const isAuth = localStorage.getItem("access_token");
   const isLoggedIn = useAppSelector((state) => state.auth.isLoggedIn);
 
   return (

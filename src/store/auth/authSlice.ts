@@ -15,7 +15,7 @@ interface authState {
   tokenResetPwd: string;
 }
 
-const token = localStorage.getItem("fakeToken");
+const token = localStorage.getItem("access_token");
 
 const initialState: authState = {
   isLoggedIn: token ? true : false, // logged
@@ -62,6 +62,7 @@ const authSlice = createSlice({
     logout(state, action) {
       state.isLoggedIn = false;
       state.dataUser = undefined;
+      localStorage.removeItem("access_token");
     },
 
     changePwd(state, action) {
