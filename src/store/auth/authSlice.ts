@@ -63,6 +63,7 @@ const authSlice = createSlice({
       state.isLoggedIn = false;
       state.dataUser = undefined;
       localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
     },
 
     changePwd(state, action) {

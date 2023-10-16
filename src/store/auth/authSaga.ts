@@ -12,6 +12,7 @@ function* handleLogin(action: Action) {
     // if (params.email == "admin@gmail.com" && params.password == "123456") {
     yield put(authActions.loginSuccess({ name: "admin" }));
     localStorage.setItem("access_token", response.data.data.access_token);
+    localStorage.setItem("refresh_token", response.data.data.refresh_token);
     onNavigate?.();
     // } else {
     //   yield put(authActions.loginFailed());
