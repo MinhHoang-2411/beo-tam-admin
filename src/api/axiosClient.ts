@@ -19,16 +19,22 @@ axiosClient.defaults.headers.Accept = "application/json";
 // Add a request interceptor
 axiosClient.interceptors.request.use(
   async function (config: any) {
-    let token = getAuth();
+    let token: any = getAuth();
 
     if (token) {
-      if (isTokenExpired(token)) {
-        const response = await authApi.refreshToken({ access_token: token });
-        token = response.data.data.access_token;
-        localStorage.setItem("access_token", token);
+      if (isTokenExpired(token.refresh_token)) {
+        handleLogout();
+      }
+      if (isTokenExpired(token.access_token)) {
+        const response = await authApi.refreshToken({
+          refresh_token: token.refresh_token,
+        });
+        token = response.data.data;
+        localStorage.setItem("access_token", token.access_token);
+        localStorage.setItem("refresh_token", token.refresh_token);
       }
       config.headers = {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token.access_token}`,
       };
     }
     return config;

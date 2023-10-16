@@ -140,11 +140,13 @@ const OrderDetail = () => {
               <img src={deliveryImg} alt="ship-img" style={{ width: "70px" }} />
               <Stack>
                 <p>{row.method_title}</p>
-                {row.meta_data.map((item) => (
-                  <p>
-                    {item.display_key}: {item.display_value}
-                  </p>
-                ))}
+                {row.meta_data
+                  .filter((val) => val.display_key == "Mặt hàng")
+                  .map((item) => (
+                    <p>
+                      {item.display_key}: {item.display_value}
+                    </p>
+                  ))}
               </Stack>
             </Stack>
           </TableCell>
@@ -402,7 +404,9 @@ const OrderDetail = () => {
         <Stack alignItems="flex-end" sx={{ px: 8, py: 1 }}>
           <Stack direction="row" spacing={10} justifyContent="space-between">
             <p>Tạm tính:</p>
-            <b>{orderDetail?.total}</b>
+            <b>
+              {Number(orderDetail?.total) - Number(orderDetail?.shipping_total)}
+            </b>
           </Stack>
           <Stack direction="row" spacing={10} justifyContent="space-between">
             <p>Giao nhận hàng:</p>
@@ -410,9 +414,7 @@ const OrderDetail = () => {
           </Stack>
           <Stack direction="row" spacing={10} justifyContent="space-between">
             <p>Thành tiền:</p>
-            <b>
-              {Number(orderDetail?.shipping_total) + Number(orderDetail?.total)}
-            </b>
+            <b>{Number(orderDetail?.total)}</b>
           </Stack>
         </Stack>
       </Box>
