@@ -19,6 +19,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 
 // empty
 import Empty from "../../components/table/Empty";
+import noImage from "../../assets/emptyData/no-picture.png";
 import { HeadCell } from "../../types/table";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { checkAllCondition, handleCheckAll } from "../../utils/table";
@@ -37,7 +38,7 @@ export default function ProductsTable() {
   const [listStatusObject] = useState<any>({
     completed: "Đã hoàn thành",
     failed: "Thất bại",
-    processing : "Đang triển khai"
+    processing: "Đang triển khai",
   });
   const [listChecked, setListChecked] = useState<any[]>([]);
   const isCheckAll = useMemo(
@@ -158,8 +159,8 @@ export default function ProductsTable() {
             <Stack direction="row" spacing={1} alignItems="center">
               <img
                 style={{ width: "70px" }}
-                src={row.images[0].src}
-                alt={row.images[0].alt}
+                src={row.images[0]?.src || noImage}
+                alt={row.images[0]?.alt || "no-img"}
               />
               <p style={{ overflow: "hidden", textOverflow: "ellipsis" }}>
                 {row.name}
