@@ -16,10 +16,12 @@ import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 import WysiwygIcon from "@mui/icons-material/Wysiwyg";
 import GroupIcon from "@mui/icons-material/Group";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import CategoryIcon from "@mui/icons-material/Category";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
 import InfoIcon from "@mui/icons-material/Info";
+
 import { authActions } from "../../store/auth/authSlice";
 import { colorToken } from "../../theme/colorToken";
 import userImageDefault from "../../assets/user/user.png";
@@ -224,6 +226,28 @@ const SidebarCustom = () => {
               icon={<WysiwygIcon />}
             >
               <Typography fontWeight="500">Đơn hàng</Typography>
+            </MenuItem>
+
+            <MenuItem
+              active={selected.toLowerCase().includes("admin")}
+              onClick={() => {
+                setSelected("admin");
+                navigate("/admin");
+              }}
+              icon={<AdminPanelSettingsIcon />}
+            >
+              <Typography fontWeight="500">Quản trị viên</Typography>
+            </MenuItem>
+
+            <MenuItem
+              active={selected.toLowerCase().includes("customer")}
+              onClick={() => {
+                setSelected("customer");
+                navigate("/customer");
+              }}
+              icon={<GroupIcon />}
+            >
+              <Typography fontWeight="500">Thành viên</Typography>
             </MenuItem>
 
             {!isCollapseSidebar && (

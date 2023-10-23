@@ -9,6 +9,7 @@ import modalReducer from "./modal/modalSlice";
 
 import orderReducer from "./order/orderSlice";
 import productReducer2 from "./product/productSlice";
+import userReducer from "./user/userSlice";
 
 const reducers = combineReducers({
   alert: alertReducer,
@@ -17,6 +18,7 @@ const reducers = combineReducers({
   modal: modalReducer,
   order: orderReducer,
   product2: productReducer2,
+  user: userReducer,
 });
 
 const sagaMiddleware = createSagaMiddleware();
