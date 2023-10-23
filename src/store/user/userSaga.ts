@@ -27,12 +27,12 @@ function* handleGetDetailAdmin(action: Action) {
   try {
     const id = action.payload;
 
-    const response: { data: DetailAdmin } = yield call(
+    const response: { data: { data: DetailAdmin } } = yield call(
       userApi.getDetailAdmin,
       id
     );
 
-    yield put(userActions.getDetailAdminSuccess(response.data));
+    yield put(userActions.getDetailAdminSuccess(response.data.data));
   } catch (error) {
     yield put(userActions.getDetailAdminFailed());
     yield put(
@@ -65,12 +65,12 @@ function* handleGetDetailCustomer(action: Action) {
   try {
     const id = action.payload;
 
-    const response: { data: DetailCustomer } = yield call(
+    const response: { data: { data: DetailCustomer } } = yield call(
       userApi.getDetailCustomer,
       id
     );
 
-    yield put(userActions.getDetailCustomerSuccess(response.data));
+    yield put(userActions.getDetailCustomerSuccess(response.data.data));
   } catch (error) {
     yield put(userActions.getDetailCustomerFailed());
     yield put(

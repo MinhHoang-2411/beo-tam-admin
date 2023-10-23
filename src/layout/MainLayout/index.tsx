@@ -32,7 +32,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
         }
       >
         <Box sx={{ px: 4, pb: 4, pt: 3, bgcolor: colors.background.main }}>
-          <Breadcrumb />
+          {/* <Breadcrumb /> */}
           <Paper sx={{ minHeight: "85vh" }}>{children}</Paper>
         </Box>
         <CreateOrEditAdminModal />

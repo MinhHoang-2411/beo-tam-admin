@@ -151,6 +151,13 @@ const user = createSlice({
     unSelectCustomer(state) {
       state.selectedCustomer = null;
     },
+
+    resetDetailAdmin(state) {
+      state.adminDetail = null;
+    },
+    resetDetailCustomer(state) {
+      state.adminDetail = null;
+    },
   },
 });
 

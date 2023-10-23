@@ -24,7 +24,31 @@ export interface DetailCustomer {
   avatar_url: string;
   createdAt: string;
   updatedAt: string;
-  billing: any;
+  billing: {
+    first_name: string;
+    last_name: string;
+    company: string;
+    address_1: string;
+    address_2: string;
+    city: string;
+    postcode: string;
+    country: string;
+    state: string;
+    email: string;
+    phone: string;
+  };
+  shipping: {
+    first_name: string;
+    last_name: string;
+    company: string;
+    address_1: string;
+    address_2: string;
+    city: string;
+    postcode: string;
+    country: string;
+    state: string;
+    phone: string;
+  };
 }
 
 export interface DetailAdmin {

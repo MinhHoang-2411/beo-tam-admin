@@ -16,7 +16,7 @@ import OrderTableHead from "../../components/table/OrderTableHead";
 
 // icon
 import CancelIcon from "@mui/icons-material/Cancel";
-import EditIcon from "@mui/icons-material/Edit";
+import InfoIcon from "@mui/icons-material/Info";
 
 // empty
 import Empty from "../../components/table/Empty";
@@ -31,6 +31,7 @@ import { Order } from "../../types/order";
 import { DetailAdmin } from "../../types/user";
 import { userActions } from "../../store/user/userSlice";
 import { layoutActions } from "../../store/layout/layoutSlice";
+import history from "../../routes/history";
 
 export default function AdminTable() {
   const dispatch = useAppDispatch();
@@ -80,14 +81,7 @@ export default function AdminTable() {
       width: "40px",
     },
     {
-      id: "customerId",
-      align: "left",
-      disablePadding: false,
-      label: "ID",
-      fontSize: "15px",
-    },
-    {
-      id: "customerName",
+      id: "adminName",
       align: "left",
       disablePadding: false,
       label: "Tên quản trị viên",
@@ -123,10 +117,6 @@ export default function AdminTable() {
             />
           </TableCell>
 
-          <TableCell align="left" className="table-cell">
-            {row._id}
-          </TableCell>
-
           <TableCell
             align="left"
             className="table-cell"
@@ -134,6 +124,11 @@ export default function AdminTable() {
               minWidth: 150,
               maxWidth: 250,
               overflow: "hidden",
+              "&:hover": {
+                color: "#52A186",
+                fontWeight: 700,
+              },
+              cursor: "pointer",
             }}
           >
             {`${row.first_name} ${row.last_name}`}
@@ -157,12 +152,11 @@ export default function AdminTable() {
                 <IconButton
                   aria-label="edit"
                   onClick={(e) => {
-                    dispatch(userActions.selectAdmin(row));
-                    dispatch(layoutActions.openModalAdmin());
+                    history.push(`/admin/${row._id}`);
                   }}
                   color="primary"
                 >
-                  <EditIcon fontSize="medium" />
+                  <InfoIcon fontSize="medium" />
                 </IconButton>
                 <IconButton
                   aria-label="delete"

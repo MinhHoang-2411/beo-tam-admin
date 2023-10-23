@@ -16,7 +16,7 @@ import OrderTableHead from "../../components/table/OrderTableHead";
 
 // icon
 import CancelIcon from "@mui/icons-material/Cancel";
-import EditIcon from "@mui/icons-material/Edit";
+import InfoIcon from "@mui/icons-material/Info";
 
 // empty
 import Empty from "../../components/table/Empty";
@@ -31,6 +31,7 @@ import { Order } from "../../types/order";
 import { DetailCustomer } from "../../types/user";
 import { userActions } from "../../store/user/userSlice";
 import { layoutActions } from "../../store/layout/layoutSlice";
+import history from "../../routes/history";
 
 export default function CustomerTable() {
   const dispatch = useAppDispatch();
@@ -43,7 +44,7 @@ export default function CustomerTable() {
     [listCustomer, listChecked]
   );
   const handleChecked = (e: any) => {
-    const id = Number(e.target.value);
+    const id = e.target.value;
     const tmpList = [...listChecked];
     //check xem id đã tồn tại trong listChecked chưa, nếu có sẽ trả về giá trị >-1
     const index = tmpList.indexOf(id);
@@ -54,6 +55,7 @@ export default function CustomerTable() {
       tmpList.push(id);
     }
     setListChecked(tmpList);
+    console.log({ tmpList });
   };
   const resetChecked = () => {
     setListChecked([]);
@@ -125,7 +127,7 @@ export default function CustomerTable() {
           </TableCell>
 
           <TableCell align="left" className="table-cell">
-            {row._id}
+            {row.wp_user_id}
           </TableCell>
 
           <TableCell
@@ -135,6 +137,11 @@ export default function CustomerTable() {
               minWidth: 150,
               maxWidth: 250,
               overflow: "hidden",
+              "&:hover": {
+                color: "#52A186",
+                fontWeight: 700,
+              },
+              cursor: "pointer",
             }}
           >
             {`${row.first_name} ${row.last_name}`}
@@ -158,12 +165,11 @@ export default function CustomerTable() {
                 <IconButton
                   aria-label="edit"
                   onClick={(e) => {
-                    dispatch(userActions.selectCustomer(row));
-                    dispatch(layoutActions.openModalCustomer());
+                    history.push(`/customer/${row._id}`);
                   }}
                   color="primary"
                 >
-                  <EditIcon fontSize="medium" />
+                  <InfoIcon fontSize="medium" />
                 </IconButton>
                 <IconButton
                   aria-label="delete"

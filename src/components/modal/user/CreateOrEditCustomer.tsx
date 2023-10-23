@@ -258,7 +258,7 @@ const CreateOrEditCustomerModal = () => {
             <Grid item xs={6}>
               <TextField
                 id="billing-state"
-                label="State"
+                label="Tỉnh"
                 inputProps={{ ...register("billing.state") }}
                 error={!!errors.billing?.state?.message}
                 helperText={errors.billing?.state?.message}
