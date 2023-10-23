@@ -8,18 +8,15 @@ const getAuth = () => {
   const accessToken = localStorage.getItem("access_token");
   const refreshToken = localStorage.getItem("refresh_token");
   if (!accessToken || !refreshToken) {
+    console.log("errrr");
     return;
   }
 
   try {
-    const auth = {
-      access_token: JSON.parse(accessToken),
-      refresh_token: JSON.parse(refreshToken),
+    return {
+      access_token: JSON.parse(accessToken as string),
+      refresh_token: JSON.parse(refreshToken as string),
     };
-    if (auth) {
-      // You can easily check auth_token expiration also
-      return auth;
-    }
   } catch (error) {
     console.error("AUTH LOCAL STORAGE PARSE ERROR", error);
   }

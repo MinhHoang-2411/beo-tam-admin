@@ -19,22 +19,23 @@ axiosClient.defaults.headers.Accept = "application/json";
 // Add a request interceptor
 axiosClient.interceptors.request.use(
   async function (config: any) {
-    let token: any = getAuth();
-
-    if (token) {
-      if (isTokenExpired(token.refresh_token)) {
+    let access_token = localStorage.getItem("access_token");
+    let refresh_token = localStorage.getItem("refreshToken");
+    if (access_token) {
+      if (refresh_token && isTokenExpired(refresh_token as string)) {
         handleLogout();
       }
-      if (isTokenExpired(token.access_token)) {
+      if (isTokenExpired(access_token)) {
         const response = await authApi.refreshToken({
-          refresh_token: token.refresh_token,
+          refresh_token: refresh_token,
         });
-        token = response.data.data;
-        localStorage.setItem("access_token", token.access_token);
-        localStorage.setItem("refresh_token", token.refresh_token);
+        access_token = response.data.data.access_token;
+        refresh_token = response.data.data.refresh_token;
+        localStorage.setItem("access_token", response.data.data.access_token);
+        localStorage.setItem("refresh_token", response.data.data.refresh_token);
       }
       config.headers = {
-        Authorization: `Bearer ${token.access_token}`,
+        Authorization: `Bearer ${access_token}`,
       };
     }
     return config;
@@ -66,7 +67,7 @@ const handleErrorApi = (status: number) => {
   switch (status) {
     case 401:
     case 403:
-      handleLogout();
+      // handleLogout();
       break;
 
     case 500:

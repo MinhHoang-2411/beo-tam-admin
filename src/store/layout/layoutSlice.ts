@@ -4,11 +4,8 @@ interface LayoutType {
   theme: "dark" | "light";
   isCollapseSidebar: boolean;
   authState: "login" | "register";
-  isOpenOrganizerModal: boolean;
-  isOpenProductModal: boolean;
-  isOpenConsignmentModal: boolean;
-  isOpenChainsModal: boolean;
-  isOpenAddMemberModal: boolean;
+  isOpenAddOrEditAdminModal: boolean;
+  isOpenAddOrEditCustomerModal: boolean;
   isLayoutLoading: boolean;
 }
 
@@ -16,11 +13,8 @@ const initialState: LayoutType = {
   theme: "light",
   isCollapseSidebar: false,
   authState: "login",
-  isOpenOrganizerModal: false,
-  isOpenProductModal: false,
-  isOpenConsignmentModal: false,
-  isOpenChainsModal: false,
-  isOpenAddMemberModal: false,
+  isOpenAddOrEditAdminModal: false,
+  isOpenAddOrEditCustomerModal: false,
   isLayoutLoading: false,
 };
 
@@ -42,39 +36,18 @@ const layoutSlice = createSlice({
       }
     },
 
-    openModalProduct(state) {
-      state.isOpenProductModal = true;
+    openModalAdmin(state) {
+      state.isOpenAddOrEditAdminModal = true;
     },
-    closeModalProduct(state) {
-      state.isOpenProductModal = false;
-    },
-
-    openModalConsignment(state) {
-      state.isOpenConsignmentModal = true;
-    },
-    closeModalConsignment(state) {
-      state.isOpenConsignmentModal = false;
+    closeModalAdmin(state) {
+      state.isOpenAddOrEditAdminModal = false;
     },
 
-    openModalChains(state) {
-      state.isOpenChainsModal = true;
+    openModalCustomer(state) {
+      state.isOpenAddOrEditCustomerModal = true;
     },
-    closeModalChains(state) {
-      state.isOpenChainsModal = false;
-    },
-
-    openModalOrganizer(state) {
-      state.isOpenOrganizerModal = true;
-    },
-    closeModalOrganizer(state) {
-      state.isOpenOrganizerModal = false;
-    },
-
-    openModalAddMember(state) {
-      state.isOpenAddMemberModal = true;
-    },
-    closeModalAddMember(state) {
-      state.isOpenAddMemberModal = false;
+    closeModalCustomer(state) {
+      state.isOpenAddOrEditCustomerModal = false;
     },
 
     startLayoutLoading(state) {

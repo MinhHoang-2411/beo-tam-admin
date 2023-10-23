@@ -15,6 +15,7 @@ interface ModalProps {
   secondaryAction?: () => void;
   secondaryActionLabel?: string;
   width?: any;
+  bgColor?: any;
 }
 
 const BaseModal: React.FC<ModalProps> = ({
@@ -29,6 +30,7 @@ const BaseModal: React.FC<ModalProps> = ({
   secondaryAction,
   secondaryActionLabel,
   width,
+  bgColor,
 }) => {
   const [showModal, setShowModal] = useState(isOpen);
   const theme = useTheme();
@@ -115,7 +117,11 @@ const BaseModal: React.FC<ModalProps> = ({
           `}
           >
             <div
-              style={{ backgroundColor: `${theme.palette.background.default}` }}
+              style={{
+                backgroundColor: bgColor
+                  ? bgColor
+                  : `${theme.palette.background.default}`,
+              }}
               className="
               translate
               h-full

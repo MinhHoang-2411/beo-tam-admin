@@ -7,6 +7,8 @@ import { colorToken } from "../../theme/colorToken";
 import ConfirmModal from "../../components/modal/ConfirmModal";
 import { useEffect } from "react";
 import Breadcrumb from "../../components/BreadCrumb";
+import CreateOrEditAdminModal from "../../components/modal/user/CreateOrEditAdmin";
+import CreateOrEditCustomerModal from "../../components/modal/user/CreateOrEditCustomer";
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -33,6 +35,8 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
           <Breadcrumb />
           <Paper sx={{ minHeight: "85vh" }}>{children}</Paper>
         </Box>
+        <CreateOrEditAdminModal />
+        <CreateOrEditCustomerModal />
         <ConfirmModal />
         <LoadingOverLay />
       </main>
