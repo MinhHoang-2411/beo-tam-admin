@@ -127,7 +127,15 @@ export default function CustomerTable() {
           </TableCell>
 
           <TableCell align="left" className="table-cell">
-            {row.wp_user_id}
+            <a
+              href={`/customer/${row._id}`}
+              style={{
+                textDecoration: "underline",
+                color : "#0076CE"
+              }}
+            >
+              {row.wp_user_id}
+            </a>
           </TableCell>
 
           <TableCell

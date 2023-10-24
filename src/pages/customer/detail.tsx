@@ -12,6 +12,7 @@ import LoadingPage from "../../components/LoadingPage";
 
 interface FieldValues {
   email: string;
+  password?: string;
   first_name: string;
   last_name: string;
   billing?: {
@@ -62,6 +63,7 @@ const CustomerDetail = () => {
       email: "",
       first_name: "",
       last_name: "",
+      password: "",
       billing: {
         first_name: "",
         last_name: "",
@@ -100,18 +102,21 @@ const CustomerDetail = () => {
     ),
   });
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    const payload = {
+    let payload:any = {
       user_id: detailCustomer?._id,
       first_name: data.first_name,
       last_name: data.last_name,
       billing: data.billing,
       shipping: data.shipping,
     };
-    console.log("alooooooooooooooooooooo");
+    if (data.password) {
+      payload = { ...payload, password:data.password}
+    }
     dispatch(
       userActions.updateCustomer({
         data: payload,
         onClose() {
+          reset();
           setTypePage("read");
           dispatch(userActions.getDetailCustomer(id));
         },
@@ -124,6 +129,8 @@ const CustomerDetail = () => {
       setValue("first_name", detailCustomer.first_name);
       setValue("last_name", detailCustomer.last_name);
       setValue("email", detailCustomer.email);
+      setValue("billing", detailCustomer.billing);
+      setValue("shipping", detailCustomer.shipping)
     }
   }, [detailCustomer]);
 
@@ -388,6 +395,14 @@ const CustomerDetail = () => {
                   error={!!errors.email?.message}
                   required
                   helperText={errors.email?.message}
+                />
+                <TextField
+                  sx={{ width: "60%" }}
+                  id="password"
+                  label="Password"
+                  inputProps={{ ...register("password") }}
+                  error={!!errors.password?.message}
+                  helperText={errors.password?.message}
                 />
                 <Typography variant="h4" sx={{ my: 1 }}>
                   Địa chỉ thanh toán

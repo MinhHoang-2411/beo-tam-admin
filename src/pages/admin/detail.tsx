@@ -13,6 +13,8 @@ import LoadingPage from "../../components/LoadingPage";
 interface FieldValues {
   first_name: string;
   last_name: string;
+  email: string;
+  password?: string;
 }
 const AdminDetail = () => {
   const dispatch = useAppDispatch();
@@ -35,20 +37,28 @@ const AdminDetail = () => {
     defaultValues: {
       first_name: "",
       last_name: "",
+      email: "",
+      password: "",
     },
     resolver: yupResolver(
       yup.object().shape({
+        email: yup.string().email("Email không hợp lệ").required("Vui lòng nhập trường này"),
         first_name: yup.string().required("Vui lòng nhập trường này"),
         last_name: yup.string().required("Vui lòng nhập trường này"),
       })
     ),
   });
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    const payload = {
+    let payload:any = {
       user_id: detailAdmin?._id,
       first_name: data.first_name,
       last_name: data.last_name,
+      email:data.email
     };
+
+    if (data.password) {
+      payload = { ...payload, password:data.password}
+    }
     dispatch(
       userActions.updateAdmin({
         data: payload,
@@ -64,6 +74,7 @@ const AdminDetail = () => {
     if (detailAdmin?._id) {
       setValue("first_name", detailAdmin.first_name);
       setValue("last_name", detailAdmin.last_name);
+      setValue("email",detailAdmin.email)
     }
   }, [detailAdmin]);
 
@@ -139,9 +150,21 @@ const AdminDetail = () => {
                     sx={{ width: "calc(60% + 8px)" }}
                     id="email"
                     label="Email"
-                    value={detailAdmin?.email}
-                    disabled
-                    InputLabelProps={{ shrink: true }}
+                    inputProps={{ ...register("email") }}
+                    error={!!errors.email?.message}
+                    required
+                    helperText={errors.email?.message}
+                  />
+                    </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    sx={{ width: "calc(60% + 8px)" }}
+                    id="password"
+                    label="Mật khẩu"
+                    inputProps={{ ...register("password") }}
+                    error={!!errors.password?.message}
+                    required
+                    helperText={errors.password?.message}
                   />
                 </Grid>
                 <Grid item xs={12}>

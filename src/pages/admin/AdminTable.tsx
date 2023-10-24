@@ -131,7 +131,14 @@ export default function AdminTable() {
               cursor: "pointer",
             }}
           >
-            {`${row.first_name} ${row.last_name}`}
+            <a
+              href={`/admin/${row._id}`}
+              style={{
+                textDecoration: "underline",
+                color : "#0076CE"
+              }}>
+                {`${row.first_name} ${row.last_name}`}
+            </a>
           </TableCell>
 
           <TableCell
