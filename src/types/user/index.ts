@@ -21,6 +21,8 @@ export interface DetailCustomer {
   first_name: string;
   last_name: string;
   role: string;
+  birthday: string;
+  gender: string;
   avatar_url: string;
   createdAt: string;
   updatedAt: string;

@@ -3,18 +3,28 @@ import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { userActions } from "../../store/user/userSlice";
 import { useParams } from "react-router-dom";
 import CustomButton from "../../components/share/CustomButton";
 import EditIcon from "@mui/icons-material/Edit";
 import LoadingPage from "../../components/LoadingPage";
+import dayjs from "dayjs";
 
 interface FieldValues {
   email: string;
   password?: string;
   first_name: string;
   last_name: string;
+  birthday?: string;
+  gender?: string;
   billing?: {
     first_name?: string;
     last_name?: string;
@@ -52,6 +62,11 @@ const CustomerDetail = () => {
     (state) => state.user.loadingCRUDCustomer
   );
   const [typePage, setTypePage] = useState<"read" | "edit">("read");
+  const genderLabels = {
+    male: 'Nam',
+    female: 'Nữ',
+    other: 'khác'
+  };
   const {
     register,
     handleSubmit,
@@ -64,6 +79,8 @@ const CustomerDetail = () => {
       first_name: "",
       last_name: "",
       password: "",
+      gender: "",
+      birthday: "",
       billing: {
         first_name: "",
         last_name: "",
@@ -108,6 +125,8 @@ const CustomerDetail = () => {
       last_name: data.last_name,
       billing: data.billing,
       shipping: data.shipping,
+      birthday: data.birthday,
+      gender : data.gender
     };
     if (data.password) {
       payload = { ...payload, password:data.password}
@@ -131,6 +150,9 @@ const CustomerDetail = () => {
       setValue("email", detailCustomer.email);
       setValue("billing", detailCustomer.billing);
       setValue("shipping", detailCustomer.shipping)
+      setValue("gender", detailCustomer.gender)
+      setValue("birthday", detailCustomer.birthday)
+
     }
   }, [detailCustomer]);
 
@@ -147,7 +169,7 @@ const CustomerDetail = () => {
         <LoadingPage />
       ) : (
         <>
-          <Stack sx={{ mb: 2 }} direction="row" spacing={2} alignItems="center">
+          <Stack sx={{ mb: 4 }} direction="row" spacing={2} alignItems="center">
             <Typography variant="h3">Thông tin Thành viên</Typography>
             {typePage == "read" ? (
               <CustomButton
@@ -165,29 +187,41 @@ const CustomerDetail = () => {
 
           {typePage == "read" ? (
             <Stack spacing={1}>
-              <Box sx={{ p: 1, border: "1px solid #ccc", borderRadius: 1 }}>
-                <Grid container spacing={1}>
+              <Box sx={{ p: 2, border: "1px solid #ccc", borderRadius: 1 }}>
+                <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
                       Thông tin chung
                     </Typography>
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item xs={6}>
                     <Typography variant="h5">
                       <b>Tên: </b>
                       {detailCustomer?.first_name} {detailCustomer?.last_name}
                     </Typography>
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid item xs={6}>
                     <Typography variant="h5">
                       <b>Email: </b>
                       {detailCustomer?.email}
                     </Typography>
                   </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="h5">
+                      <b>Giới tính: </b>
+                      {genderLabels[(detailCustomer?.gender)] ?? 'khác'}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="h5">
+                      <b>Ngày sinh: </b>
+                      {detailCustomer?.birthday}
+                    </Typography>
+                  </Grid>
                 </Grid>
               </Box>
-              <Box sx={{ p: 1, border: "1px solid #ccc", borderRadius: 1 }}>
-                <Grid container spacing={1}>
+              <Box sx={{ p: 2, border: "1px solid #ccc", borderRadius: 1 }}>
+                <Grid container spacing={2}>
                   <Grid item xs={12} sx={{ mt: 1 }}>
                     <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
                       Địa chỉ thanh toán
@@ -277,8 +311,8 @@ const CustomerDetail = () => {
                   </Grid>
                 </Grid>
               </Box>
-              <Box sx={{ p: 1, border: "1px solid #ccc", borderRadius: 1 }}>
-                <Grid container spacing={1}>
+              <Box sx={{ p: 2, border: "1px solid #ccc", borderRadius: 1 }}>
+                <Grid container spacing={2}>
                   <Grid item xs={12} sx={{ mt: 1 }}>
                     <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
                       Địa chỉ nhận hàng
@@ -396,6 +430,30 @@ const CustomerDetail = () => {
                   required
                   helperText={errors.email?.message}
                 />
+                <FormControl  sx={{ width: "60%" }}>
+                  <InputLabel id="demo-simple-select-label">Giới tính</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="gender"
+                    label="Giới tính"
+                    value={detailCustomer?.gender}
+                    required
+                    onChange={e => {setValue("gender", e.target.value as string) }}
+                  >
+                    <MenuItem value={'male'}>Nam</MenuItem>
+                    <MenuItem value={'female'}>Nữ</MenuItem>
+                    <MenuItem value={'other'}>Khác</MenuItem>
+                  </Select>
+                    </FormControl>                    
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      sx={{ width: "60%" }}
+                      label="Ngày sinh"
+                      format="DD/MM/YYYY"
+                      value={dayjs(detailCustomer?.birthday, "DD/MM/YYYY")}
+                      onChange={(newDate:any) => {setValue("birthday", dayjs(newDate).format("DD/MM/YYYY"))}}
+                    />
+                </LocalizationProvider>
                 <TextField
                   sx={{ width: "60%" }}
                   id="password"
