@@ -107,9 +107,9 @@ const AdminDetail = () => {
             )}
           </Stack>
 
-          <Grid container spacing={2}>
+          <Grid sx={{ mb: 2 }} container spacing={2}>
             {typePage == "read" ? (
-              <>
+              <Box sx={{my: 2, mx:2, p: 2, border: "1px solid #ccc", borderRadius: 1 }}>
                 <Grid item xs={12}>
                   <Typography variant="h5">
                     <b>Tên: </b>
@@ -122,7 +122,7 @@ const AdminDetail = () => {
                     {detailAdmin?.email}
                   </Typography>
                 </Grid>
-              </>
+              </Box>
             ) : (
               <>
                 <Grid item xs={12}>

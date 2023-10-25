@@ -2,8 +2,14 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { useAppDispatch, useAppSelector } from "../../../hooks/store";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import Heading from "../../Heading";
 import { Grid, TextField, Typography } from "@mui/material";
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import BaseModal from "../BaseModal";
 import { layoutActions } from "../../../store/layout/layoutSlice";
 import { userActions } from "../../../store/user/userSlice";
@@ -14,6 +20,9 @@ interface FieldValues {
   email: string;
   first_name: string;
   last_name: string;
+  birthday?: string;
+  gender?: string;
+  password?: string;
   billing?: {
     first_name?: string;
     last_name?: string;
@@ -66,6 +75,9 @@ const CreateOrEditCustomerModal = () => {
       email: "",
       first_name: "",
       last_name: "",
+      birthday: "",
+      gender: "male",
+      password: "",
       billing: {
         first_name: "",
         last_name: "",
@@ -178,6 +190,34 @@ const CreateOrEditCustomerModal = () => {
         error={!!errors.last_name?.message}
         required
         helperText={errors.last_name?.message}
+      />
+      <FormControl fullWidth>
+        <InputLabel id="demo-simple-select-label">Giới tính</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          label="Giới tính"
+          value="male"
+          required
+          onChange={e => {setValue("gender", e.target.value as string) }}
+        >
+          <MenuItem value={'male'}>Nam</MenuItem>
+          <MenuItem value={'female'}>Nữ</MenuItem>
+          <MenuItem value={'other'}>Khác</MenuItem>
+        </Select>
+      </FormControl>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DatePicker
+          label="Ngày sinh"
+          onChange={(newDate:any) => {setValue("birthday", new Date(newDate).toLocaleDateString('en-US'))}}
+        />
+      </LocalizationProvider>
+      <TextField
+        id="password"
+        label="Mật khẩu"
+        inputProps={{ ...register("password") }}
+        error={!!errors.password?.message}
+        helperText={errors.password?.message}
       />
       {typeModal == "edit" ? (
         <></>
