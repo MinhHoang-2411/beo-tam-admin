@@ -105,93 +105,97 @@ const AdminDetail = () => {
             ) : (
               <></>
             )}
-          </Stack>
-
-          <Grid sx={{ mb: 2 }} container spacing={2}>
+            </Stack>
             {typePage == "read" ? (
-              <Box sx={{my: 2, mx:2, p: 2, border: "1px solid #ccc", borderRadius: 1 }}>
-                <Grid item xs={12}>
-                  <Typography variant="h5">
-                    <b>Tên: </b>
-                    {detailAdmin?.first_name} {detailAdmin?.last_name}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="h5">
-                    <b>Email: </b>
-                    {detailAdmin?.email}
-                  </Typography>
-                </Grid>
-              </Box>
-            ) : (
-              <>
-                <Grid item xs={12}>
-                  <TextField
-                    sx={{ mr: 1, width: "30%" }}
-                    id="first_name"
-                    label="Tên"
-                    inputProps={{ ...register("first_name") }}
-                    error={!!errors.first_name?.message}
-                    required
-                    helperText={errors.first_name?.message}
-                  />
-                  <TextField
-                    sx={{ width: "30%" }}
-                    id="last_name"
-                    label="Họ"
-                    inputProps={{ ...register("last_name") }}
-                    error={!!errors.last_name?.message}
-                    required
-                    helperText={errors.last_name?.message}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    sx={{ width: "calc(60% + 8px)" }}
-                    id="email"
-                    label="Email"
-                    inputProps={{ ...register("email") }}
-                    error={!!errors.email?.message}
-                    required
-                    helperText={errors.email?.message}
-                  />
+              <Grid sx={{ mb: 4 }} spacing={2}>
+                <Box maxWidth="100%" sx={{ my: 2, mx: 2, p: 2, border: "1px solid #ccc", borderRadius: 1 }}>
+                    <Typography variant="h4" sx={{ fontWeight: 700, my: 2 }}>Thông tin chung</Typography>
+                    <Grid item xs={12}>
+                      <Typography variant="h5">
+                        <b>Tên: </b>
+                        {detailAdmin?.first_name} {detailAdmin?.last_name}
+                      </Typography>
                     </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    sx={{ width: "calc(60% + 8px)" }}
-                    id="password"
-                    label="Mật khẩu"
-                    inputProps={{ ...register("password") }}
-                    error={!!errors.password?.message}
-                    required
-                    helperText={errors.password?.message}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Stack direction="row" spacing={1}>
-                    <CustomButton
-                      color="primary"
-                      label="Chỉnh sửa"
-                      onClick={() => {
-                        handleSubmit(onSubmit)();
-                      }}
-                      Icon={<EditIcon />}
-                      disabled={loadingCRUDAdmin}
+                    <Grid item xs={12} sx={{ mt: 2 }}>
+                      <Typography variant="h5" >
+                        <b>Email: </b>
+                        {detailAdmin?.email}
+                      </Typography>
+                    </Grid>
+                </Box>
+                <Box maxWidth="100%" sx={{ my: 2, mx: 2, p: 2, border: "1px solid #ccc", borderRadius: 1 }}>
+                    <Typography variant="h4" sx={{ fontWeight: 700, my: 2 }}>Thông tin quyền</Typography>
+                    <Grid>...Đang cập nhật</Grid>
+                  </Box>
+             </Grid>) :
+              (<Grid sx={{ mb: 4 }} container spacing={2}>
+                <>
+                  <Grid item xs={12}>
+                    <TextField
+                      sx={{ mr: 1, width: "30%" }}
+                      id="first_name"
+                      label="Tên"
+                      inputProps={{ ...register("first_name") }}
+                      error={!!errors.first_name?.message}
+                      required
+                      helperText={errors.first_name?.message}
                     />
-                    <CustomButton
-                      color="error"
-                      label="Hủy bỏ"
-                      onClick={() => {
-                        setTypePage("read");
-                      }}
-                      Icon={<EditIcon />}
-                      disabled={loadingCRUDAdmin}
+                    <TextField
+                      sx={{ width: "30%" }}
+                      id="last_name"
+                      label="Họ"
+                      inputProps={{ ...register("last_name") }}
+                      error={!!errors.last_name?.message}
+                      required
+                      helperText={errors.last_name?.message}
                     />
-                  </Stack>
-                </Grid>
-              </>
-            )}
-          </Grid>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      sx={{ width: "calc(60% + 8px)" }}
+                      id="email"
+                      label="Email"
+                      inputProps={{ ...register("email") }}
+                      error={!!errors.email?.message}
+                      required
+                      helperText={errors.email?.message}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      sx={{ width: "calc(60% + 8px)" }}
+                      id="password"
+                      label="Mật khẩu"
+                      inputProps={{ ...register("password") }}
+                      error={!!errors.password?.message}
+                      required
+                      helperText={errors.password?.message}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Stack direction="row" spacing={1}>
+                      <CustomButton
+                        color="primary"
+                        label="Chỉnh sửa"
+                        onClick={() => {
+                          handleSubmit(onSubmit)();
+                        }}
+                        Icon={<EditIcon />}
+                        disabled={loadingCRUDAdmin}
+                      />
+                      <CustomButton
+                        color="error"
+                        label="Hủy bỏ"
+                        onClick={() => {
+                          setTypePage("read");
+                        }}
+                        Icon={<EditIcon />}
+                        disabled={loadingCRUDAdmin}
+                      />
+                    </Stack>
+                  </Grid>
+                </>
+              </Grid>)}
         </>
       )}
     </Box>
