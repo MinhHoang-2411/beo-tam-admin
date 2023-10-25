@@ -62,7 +62,7 @@ const CustomerDetail = () => {
     (state) => state.user.loadingCRUDCustomer
   );
   const [typePage, setTypePage] = useState<"read" | "edit">("read");
-  const genderLabels = {
+  const genderLabels:any = {
     male: 'Nam',
     female: 'Nữ',
     other: 'khác'
@@ -209,7 +209,7 @@ const CustomerDetail = () => {
                   <Grid item xs={6}>
                     <Typography variant="h5">
                       <b>Giới tính: </b>
-                      {genderLabels[(detailCustomer?.gender)] ?? 'khác'}
+                      {(detailCustomer?.gender) ? genderLabels[(detailCustomer?.gender)] : 'khác'}
                     </Typography>
                   </Grid>
                   <Grid item xs={6}>
