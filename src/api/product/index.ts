@@ -1,5 +1,5 @@
 import axios from "axios";
-const URL_API_APP = import.meta.env.VITE_APP_API_URL_APP;
+const URL_API_APP = import.meta.env.VITE_APP_API_URL_APP_WOO;
 
 const ProductApi = {
   getListProducts(query: any) {

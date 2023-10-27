@@ -1,37 +1,64 @@
-export interface Order {
-  id: number;
-  status: string;
-  date_created: any;
-  total: number;
-  shipping_total: number;
+export interface OrderDetail {
+  cart_tax: string;
+  currency: string;
+  customer: {
+    _id: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+  };
+  date_created: string;
+  date_modified: string;
+  detail: {
+    _id: string;
+    billing: Bill;
+    coupon_lines: any[];
+    fee_lines: any[];
+    line_items: any[];
+    metadata: Metadata[];
+    refund: any[];
+    shipping: Shipping;
+    shipping_lines: ShippingLine[];
+  };
+  discount_tax: string;
   discount_total: string;
-  customer_id: number;
-  billing: Bill;
-  shipping: Shipping;
-  paymentMethod: string;
   payment_method: string;
   payment_method_title: string;
-  customer_note: string;
-  date_completed: any;
-  date_paid: any;
-  number: string;
-  meta_data: Metadata[] | any[];
-  line_items: Product[];
-  tax_lines: any[];
-  shipping_lines: ShippingLine[];
-  fee_lines: any;
-  coupon_lines: any;
-  refunds: any;
-  payment_url: string;
-  is_editable: boolean;
-  needs_payment: boolean;
-  needs_processing: boolean;
-  date_created_gmt: string;
-  date_modified_gmt: string;
-  date_completed_gmt: any;
-  date_paid_gmt: any;
-  currency_symbol: any;
-  _links: any;
+  shipping_tax: string;
+  shipping_total: string;
+  status: string;
+  total: string;
+  total_tax: string;
+  woo_customer_id: string;
+  woo_order_id: string;
+  __v: number;
+  _id: string;
+}
+
+export interface Order {
+  cart_tax: string;
+  currency: string;
+  customer: {
+    _id: string;
+    first_name: string;
+    last_name: string;
+  };
+  date_created: string;
+  date_modified: string;
+  detail: string;
+  discount_tax: string;
+  discount_total: string;
+  payment_method: string;
+  payment_method_title: string;
+  shipping_tax: string;
+  shipping_total: string;
+  status: string;
+  total: string;
+  total_tax: string;
+  woo_customer_id: string;
+  woo_order_id: string;
+  __v: number;
+  _id: string;
 }
 export interface Bill {
   first_name: string;

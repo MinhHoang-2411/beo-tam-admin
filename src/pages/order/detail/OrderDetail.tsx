@@ -17,12 +17,21 @@ import { Product, ShippingLine } from "../../../types/order";
 import { HeadCell } from "../../../types/table";
 import OrderTableHead from "../../../components/table/OrderTableHead";
 import deliveryImg from "../../../assets/delivery.png";
+import { useNavigate, useParams } from "react-router-dom";
+import LoadingPage from "../../../components/LoadingPage";
+import { convertNumberFormat } from "../../../utils/numberFormat";
 const OrderDetail = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
   const dispatch = useAppDispatch();
   const orderDetail = useAppSelector((state) => state.order.OrderDetail);
+  const loadingOrderDetail = useAppSelector(
+    (state) => state.order.loadingGetDetailOrder
+  );
   useEffect(() => {
+    dispatch(orderActions.getOrderDetail(id));
     return () => {
-      dispatch(orderActions.resetOrderDetail);
+      dispatch(orderActions.resetOrderDetail());
     };
   }, []);
 
@@ -92,7 +101,7 @@ const OrderDetail = () => {
               textOverflow: "ellipsis",
             }}
           >
-            {row.price}
+            {convertNumberFormat(`${row?.price}`)}
           </TableCell>
           <TableCell
             align="center"
@@ -116,7 +125,7 @@ const OrderDetail = () => {
             align="center"
             className="table-cell"
           >
-            {row.total}
+            {convertNumberFormat(row.total)}
           </TableCell>
         </TableRow>
       </React.Fragment>
@@ -180,20 +189,22 @@ const OrderDetail = () => {
             align="center"
             className="table-cell"
           >
-            {row.total}
+            {convertNumberFormat(row.total)}
           </TableCell>
         </TableRow>
       </React.Fragment>
     );
   }
 
-  return (
+  return loadingOrderDetail ? (
+    <LoadingPage />
+  ) : (
     <Box sx={{ p: 2 }}>
       <Box sx={{ p: 2, border: "1px solid #ccc", borderRadius: "4px" }}>
         <Typography
           fontWeight={700}
           variant="h3"
-        >{`Đặt hàng #${orderDetail?.id} chi tiết`}</Typography>
+        >{`Đặt hàng #${orderDetail?._id} chi tiết`}</Typography>
         <Typography
           variant="h5"
           sx={{ color: "#606060" }}
@@ -206,7 +217,7 @@ const OrderDetail = () => {
             <Typography variant="h6" fontWeight={600} sx={{ color: "#606060" }}>
               Ngày tạo:{" "}
             </Typography>
-            <p>{convertDateWooCommerce(orderDetail?.date_created_gmt)}</p>
+            <p>{convertDateWooCommerce(orderDetail?.date_created)}</p>
 
             <Typography
               variant="h6"
@@ -223,9 +234,19 @@ const OrderDetail = () => {
             >
               Khách hàng:{" "}
             </Typography>
-            <p
-              style={{ color: "#000" }}
-            >{`${orderDetail?.billing.first_name} ${orderDetail?.billing.last_name}(${orderDetail?.billing.email})`}</p>
+            <Typography
+              sx={{
+                color: "#000",
+                "&:hover": {
+                  color: "#52A186",
+                  fontWeight: 700,
+                },
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                navigate(`/customer/${orderDetail?.customer._id}`);
+              }}
+            >{`${orderDetail?.customer.first_name} ${orderDetail?.customer.last_name}(${orderDetail?.customer.email})`}</Typography>
           </Grid>
 
           <Grid item xs={4} sx={{ mt: 1 }}>
@@ -233,30 +254,30 @@ const OrderDetail = () => {
               Thanh toán
             </Typography>
             <Typography variant="h6" sx={{ color: "#606060" }}>
-              {`${orderDetail?.billing.first_name} ${orderDetail?.billing.last_name}`}
+              {`${orderDetail?.detail.billing.first_name} ${orderDetail?.detail.billing.last_name}`}
             </Typography>
-            {orderDetail?.billing.address_1 ? (
+            {orderDetail?.detail.billing.address_1 ? (
               <Typography variant="h6" sx={{ color: "#606060" }}>
-                {`${orderDetail?.billing.address_1}`}
+                {`${orderDetail?.detail.billing.address_1}`}
               </Typography>
             ) : (
               <></>
             )}
-            {orderDetail?.billing.address_2 ? (
+            {orderDetail?.detail.billing.address_2 ? (
               <Typography variant="h6" sx={{ color: "#606060" }}>
-                {`${orderDetail?.billing.address_2}`}
+                {`${orderDetail?.detail.billing.address_2}`}
               </Typography>
             ) : (
               <></>
             )}
-            {orderDetail?.billing.city ? (
+            {orderDetail?.detail.billing.city ? (
               <Typography variant="h6" sx={{ color: "#606060" }}>
-                {`${orderDetail?.billing.city}`}
+                {`${orderDetail?.detail.billing.city}`}
               </Typography>
             ) : (
               <></>
             )}
-            {orderDetail?.billing.email ? (
+            {orderDetail?.detail.billing.email ? (
               <>
                 <Typography
                   variant="h6"
@@ -272,13 +293,13 @@ const OrderDetail = () => {
                     textDecoration: "underline",
                   }}
                 >
-                  {orderDetail?.billing.email}
+                  {orderDetail?.detail.billing.email}
                 </p>
               </>
             ) : (
               <></>
             )}
-            {orderDetail?.billing.phone ? (
+            {orderDetail?.detail.billing.phone ? (
               <>
                 <Typography
                   variant="h6"
@@ -294,7 +315,7 @@ const OrderDetail = () => {
                     textDecoration: "underline",
                   }}
                 >
-                  {orderDetail?.billing.phone}
+                  {orderDetail?.detail.billing.phone}
                 </p>
               </>
             ) : (
@@ -307,30 +328,30 @@ const OrderDetail = () => {
               Giao hàng
             </Typography>
             <Typography variant="h6" sx={{ color: "#606060" }}>
-              {`${orderDetail?.shipping.first_name} ${orderDetail?.shipping.last_name}`}
+              {`${orderDetail?.detail.shipping.first_name} ${orderDetail?.detail.shipping.last_name}`}
             </Typography>
-            {orderDetail?.billing.address_1 ? (
+            {orderDetail?.detail.shipping.address_1 ? (
               <Typography variant="h6" sx={{ color: "#606060" }}>
-                {`${orderDetail?.shipping.address_1}`}
+                {`${orderDetail?.detail.shipping.address_1}`}
               </Typography>
             ) : (
               <></>
             )}
-            {orderDetail?.billing.address_2 ? (
+            {orderDetail?.detail.shipping.address_2 ? (
               <Typography variant="h6" sx={{ color: "#606060" }}>
-                {`${orderDetail?.shipping.address_2}`}
+                {`${orderDetail?.detail.shipping.address_2}`}
               </Typography>
             ) : (
               <></>
             )}
-            {orderDetail?.billing.city ? (
+            {orderDetail?.detail.shipping.city ? (
               <Typography variant="h6" sx={{ color: "#606060" }}>
-                {`${orderDetail?.shipping.city}`}
+                {`${orderDetail?.detail.shipping.city}`}
               </Typography>
             ) : (
               <></>
             )}
-            {orderDetail?.shipping?.email ? (
+            {orderDetail?.detail.shipping?.email ? (
               <>
                 <Typography
                   variant="h6"
@@ -346,13 +367,13 @@ const OrderDetail = () => {
                     textDecoration: "underline",
                   }}
                 >
-                  {orderDetail?.shipping.email}
+                  {orderDetail?.detail.shipping.email}
                 </p>
               </>
             ) : (
               <></>
             )}
-            {orderDetail?.shipping.phone ? (
+            {orderDetail?.detail.shipping.phone ? (
               <>
                 <Typography
                   variant="h6"
@@ -368,7 +389,7 @@ const OrderDetail = () => {
                     textDecoration: "underline",
                   }}
                 >
-                  {orderDetail?.shipping.phone}
+                  {orderDetail?.detail.shipping.phone}
                 </p>
               </>
             ) : (
@@ -377,7 +398,6 @@ const OrderDetail = () => {
           </Grid>
         </Grid>
       </Box>
-
       <Box sx={{ mt: 2, border: "1px solid #ccc", borderRadius: "4px" }}>
         <TableContainer
           sx={{
@@ -392,10 +412,10 @@ const OrderDetail = () => {
           <Table aria-labelledby="tableTitle">
             <OrderTableHead headCells={headCells} />
             <TableBody>
-              {orderDetail?.line_items.map((item, index) => (
+              {orderDetail?.detail.line_items.map((item, index) => (
                 <RowProduct key={index} row={item} />
               ))}
-              {orderDetail?.shipping_lines.map((item, index) => (
+              {orderDetail?.detail.shipping_lines.map((item, index) => (
                 <RowShipping key={index} row={item} />
               ))}
             </TableBody>
@@ -405,16 +425,21 @@ const OrderDetail = () => {
           <Stack direction="row" spacing={10} justifyContent="space-between">
             <p>Tạm tính:</p>
             <b>
-              {Number(orderDetail?.total) - Number(orderDetail?.shipping_total)}
+              {convertNumberFormat(
+                JSON.stringify(
+                  Number(orderDetail?.total) -
+                    Number(orderDetail?.shipping_total)
+                )
+              )}
             </b>
           </Stack>
           <Stack direction="row" spacing={10} justifyContent="space-between">
             <p>Giao nhận hàng:</p>
-            <b>{orderDetail?.shipping_total}</b>
+            <b>{convertNumberFormat(orderDetail?.shipping_total as string)}</b>
           </Stack>
           <Stack direction="row" spacing={10} justifyContent="space-between">
             <p>Thành tiền:</p>
-            <b>{Number(orderDetail?.total)}</b>
+            <b>{convertNumberFormat(orderDetail?.total as string)}</b>
           </Stack>
         </Stack>
       </Box>
