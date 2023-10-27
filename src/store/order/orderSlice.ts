@@ -1,11 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { Order } from "../../types/order";
+import { Order, OrderDetail } from "../../types/order";
 import { Pagination } from "../../types/pagination";
 
 interface orderState {
   listOrders: Order[] | null;
   loadingGetListOrders: boolean;
-  OrderDetail: null | Order;
+  OrderDetail: null | OrderDetail;
+  loadingGetDetailOrder: boolean;
   pagination: null | Pagination;
 }
 
@@ -13,6 +14,7 @@ const initialState: orderState = {
   listOrders: null,
   loadingGetListOrders: false,
   OrderDetail: null,
+  loadingGetDetailOrder: false,
   pagination: null,
 };
 
@@ -32,10 +34,23 @@ const order = createSlice({
       state.loadingGetListOrders = false;
       state.listOrders = [];
     },
+
+    getOrderDetail(state, action) {
+      state.loadingGetDetailOrder = true;
+    },
+    getOrderDetailSuccess(state, action) {
+      state.loadingGetDetailOrder = false;
+      state.OrderDetail = action.payload;
+    },
+    getOrderDetailFailed(state) {
+      state.loadingGetDetailOrder = false;
+      state.OrderDetail = null;
+    },
+
     chooseOrderDetail(state, action) {
       state.OrderDetail = action.payload;
     },
-    resetOrderDetail(state, action) {
+    resetOrderDetail(state) {
       state.OrderDetail = null;
     },
   },

@@ -12,17 +12,18 @@ function* handleGetListOrders(action: Action) {
     } else {
       params = { page: 1, per_page: 10 };
     }
-    const response: { data: any; headers: any } = yield call(
+    const response: { data: { data: any } } = yield call(
       OrderApi.getListOrders,
       params
     );
+    console.log({ response });
     const payload = {
-      data: response.data,
+      data: response.data.data.items,
       paginate: {
         limit: action.payload.per_page || 10,
         page: action.payload.page || 1,
-        total_page: response.headers["x-wp-totalpages"],
-        total_records: response.headers["x-wp-total"],
+        total_page: response.data.data.totalPages,
+        total_records: response.data.data.totalItem,
       },
     };
     yield put(orderActions.getListOrdersSuccess(payload));
@@ -37,8 +38,31 @@ function* handleGetListOrders(action: Action) {
   }
 }
 
+function* handleGetDetailOrder(action: Action) {
+  try {
+    const id = action.payload;
+    const response: { data: { data: any } } = yield call(
+      OrderApi.getDetailOrder,
+      id
+    );
+    console.log({ response });
+    yield put(orderActions.getOrderDetailSuccess(response.data.data));
+  } catch (error) {
+    yield put(orderActions.getOrderDetailFailed());
+    yield put(
+      alertActions.showAlert({
+        text: "Không thể lấy danh sách đơn hàng",
+        type: "error",
+      })
+    );
+  }
+}
+
 function* watchOrderFlow() {
-  yield all([takeLatest(orderActions.getListOrders.type, handleGetListOrders)]);
+  yield all([
+    takeLatest(orderActions.getListOrders.type, handleGetListOrders),
+    takeLatest(orderActions.getOrderDetail.type, handleGetDetailOrder),
+  ]);
 }
 
 export function* orderSaga() {

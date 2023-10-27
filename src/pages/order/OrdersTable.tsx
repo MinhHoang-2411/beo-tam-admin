@@ -30,6 +30,7 @@ import { Order } from "../../types/order";
 import { convertDateWooCommerce } from "../../utils/convertDate";
 import { orderActions } from "../../store/order/orderSlice";
 import { useNavigate } from "react-router-dom";
+import { convertNumberFormat } from "../../utils/numberFormat";
 
 export default function OrdersTable() {
   const navigate = useNavigate();
@@ -38,9 +39,14 @@ export default function OrdersTable() {
     (state) => state.order
   );
   const [listStatusObject] = useState<any>({
+    pending: "Đang xử lý",
+    processing: "Chờ thanh toán",
+    "on-hold": "Tạm giữ",
     completed: "Đã hoàn thành",
+    cancelled: "Đã hủy",
+    refunded: "Đã hoàn lại tiền",
     failed: "Thất bại",
-    processing : "Đang triển khai"
+    Draft: "Đã xóa",
   });
   const [listChecked, setListChecked] = useState<any[]>([]);
   const isCheckAll = useMemo(
@@ -95,6 +101,21 @@ export default function OrdersTable() {
       fontSize: "15px",
     },
     {
+      id: "customer",
+      align: "left",
+      disablePadding: false,
+      label: "Khách hàng",
+      fontSize: "15px",
+    },
+
+    {
+      id: "status",
+      align: "left",
+      disablePadding: false,
+      label: "Trạng thái",
+      fontSize: "15px",
+    },
+    {
       id: "date",
       align: "left",
       disablePadding: false,
@@ -102,10 +123,10 @@ export default function OrdersTable() {
       fontSize: "15px",
     },
     {
-      id: "status",
+      id: "payment-method",
       align: "left",
       disablePadding: false,
-      label: "Trạng thái",
+      label: "Phương thức thanh toán",
       fontSize: "15px",
     },
     {
@@ -132,13 +153,46 @@ export default function OrdersTable() {
           <TableCell component="th" scope="row" align="left">
             <Checkbox
               color="secondary"
-              value={row?.id}
-              checked={listChecked?.includes(row?.id)}
+              value={row?._id}
+              checked={listChecked?.includes(row?._id)}
               onChange={handleChecked}
             />
           </TableCell>
           <TableCell align="left" className="table-cell">
-            {row.id}
+            {row._id}
+          </TableCell>
+          <TableCell
+            sx={{
+              minWidth: 150,
+              maxWidth: 150,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              "&:hover": {
+                color: "#52A186",
+                fontWeight: 700,
+              },
+              cursor: "pointer",
+            }}
+            align="left"
+            className="table-cell"
+            onClick={() => {
+              navigate(`/customer/${row.customer._id}`);
+            }}
+          >
+            {`${row.customer.first_name} ${row.customer.last_name}`}
+          </TableCell>
+
+          <TableCell
+            align="left"
+            className="table-cell"
+            sx={{
+              minWidth: 150,
+              maxWidth: 150,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {row.status}
           </TableCell>
           <TableCell
             align="left"
@@ -150,7 +204,7 @@ export default function OrdersTable() {
               textOverflow: "ellipsis",
             }}
           >
-            {convertDateWooCommerce(row.date_created_gmt)}
+            {convertDateWooCommerce(row.date_created)}
           </TableCell>
           <TableCell
             align="left"
@@ -162,19 +216,19 @@ export default function OrdersTable() {
               textOverflow: "ellipsis",
             }}
           >
-            {listStatusObject[row.status]}
+            {row.payment_method_title}
           </TableCell>
           <TableCell
             align="left"
             className="table-cell"
             sx={{
-              minWidth: 200,
-              maxWidth: 200,
+              minWidth: 100,
+              maxWidth: 100,
               overflow: "hidden",
               textOverflow: "ellipsis",
             }}
           >
-            {`${row.total} ${row.currency_symbol}`}
+            {`${convertNumberFormat(row.total)}đ`}
           </TableCell>
           <TableCell align="left" className="table-cell">
             <Box>
@@ -193,8 +247,8 @@ export default function OrdersTable() {
                   sx={{ marginLeft: "0px" }}
                   aria-label="info"
                   onClick={(e) => {
-                    dispatch(orderActions.chooseOrderDetail(row));
-                    navigate(`/orders/${row.id}`);
+                    // dispatch(orderActions.chooseOrderDetail(row));
+                    navigate(`/orders/${row._id}`);
                   }}
                   color="primary"
                 >
