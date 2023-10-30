@@ -158,8 +158,25 @@ export default function OrdersTable() {
               onChange={handleChecked}
             />
           </TableCell>
-          <TableCell align="left" className="table-cell">
-            {row._id}
+          <TableCell
+            align="left"
+            className="table-cell"
+            onClick={() => {
+              navigate(`/orders/${row._id}`);
+            }}
+            sx={{
+              minWidth: 150,
+              maxWidth: 150,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              "&:hover": {
+                color: "#52A186",
+                fontWeight: 700,
+              },
+              cursor: "pointer",
+            }}
+          >
+            {row.woo_order_id}
           </TableCell>
           <TableCell
             sx={{

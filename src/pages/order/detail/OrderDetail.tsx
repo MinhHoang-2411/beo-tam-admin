@@ -204,7 +204,7 @@ const OrderDetail = () => {
         <Typography
           fontWeight={700}
           variant="h3"
-        >{`Đặt hàng #${orderDetail?._id} chi tiết`}</Typography>
+        >{`Đặt hàng #${orderDetail?.woo_order_id} chi tiết`}</Typography>
         <Typography
           variant="h5"
           sx={{ color: "#606060" }}
