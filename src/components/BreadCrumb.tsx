@@ -11,7 +11,7 @@ const switchLanguages: any = {
 const Breadcrumb = () => {
   const location = useLocation();
   const pathnames = location.pathname.split("/").filter((x) => x);
-  const detailOrder = useAppSelector((state) => state?.order?.OrderDetail?.id);
+  const detailOrder = useAppSelector((state) => state?.order?.OrderDetail?._id);
   return (
     <Breadcrumbs sx={{ fontSize: 14 }}>
       <Link to="/">
