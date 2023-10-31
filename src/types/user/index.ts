@@ -16,7 +16,7 @@ export interface CurrentUser {
 export interface DetailCustomer {
   _id: string;
   username: string;
-  wp_user_id: string;
+  woo_user_id: string;
   email: string;
   first_name: string;
   last_name: string;

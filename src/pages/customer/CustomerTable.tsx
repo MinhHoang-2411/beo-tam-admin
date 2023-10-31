@@ -134,7 +134,7 @@ export default function CustomerTable() {
                 color : "#0076CE"
               }}
             >
-              {row.wp_user_id}
+              {row.woo_user_id}
             </a>
           </TableCell>
 
