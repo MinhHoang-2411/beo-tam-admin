@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { DetailAdmin, DetailCustomer } from "../../types/user";
+import { Pagination } from "../../types/pagination";
 
 interface UserState {
   listAdmin: DetailAdmin[] | null;
@@ -14,6 +15,8 @@ interface UserState {
   loadingCRUDCustomer: boolean;
   selectedAdmin: null | DetailAdmin;
   selectedCustomer: null | DetailCustomer;
+  paginationAdmin: null | Pagination;
+  paginationCustomer: null | Pagination;
 }
 
 const initialState: UserState = {
@@ -29,6 +32,8 @@ const initialState: UserState = {
   loadingCRUDCustomer: false,
   selectedAdmin: null,
   selectedCustomer: null,
+  paginationAdmin: null,
+  paginationCustomer: null,
 };
 
 const user = createSlice({
@@ -39,7 +44,8 @@ const user = createSlice({
       state.loadingGetListAdmin = true;
     },
     getListAdminSuccess(state, action) {
-      state.listAdmin = action.payload;
+      state.listAdmin = action.payload.data;
+      state.paginationAdmin = action.payload.pagination;
       state.loadingGetListAdmin = false;
     },
     getListAdminFailed(state) {
@@ -61,7 +67,8 @@ const user = createSlice({
       state.loadingGetListCustomer = true;
     },
     getListCustomerSuccess(state, action) {
-      state.listCustomer = action.payload;
+      state.listCustomer = action.payload.data;
+      state.paginationCustomer = action.payload.pagination;
       state.loadingGetListCustomer = false;
     },
     getListCustomerFailed(state) {

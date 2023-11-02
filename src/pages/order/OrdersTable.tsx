@@ -78,7 +78,8 @@ export default function OrdersTable() {
       title: "Xác nhận",
       content: <span>Bạn có chắc chắc muốn xóa đơn hàng này không ?</span>,
       onAction: () => {
-        console.log("yolo");
+        dispatch(orderActions.deleteOrder(data._id));
+        // console.log("yolo");
       },
       buttonText: "Xóa",
     };
@@ -165,8 +166,8 @@ export default function OrdersTable() {
               navigate(`/orders/${row._id}`);
             }}
             sx={{
-              minWidth: 150,
-              maxWidth: 150,
+              minWidth: 100,
+              maxWidth: 100,
               overflow: "hidden",
               textOverflow: "ellipsis",
               "&:hover": {
@@ -181,7 +182,6 @@ export default function OrdersTable() {
           <TableCell
             sx={{
               minWidth: 150,
-              maxWidth: 150,
               overflow: "hidden",
               textOverflow: "ellipsis",
               "&:hover": {
@@ -196,7 +196,12 @@ export default function OrdersTable() {
               navigate(`/customer/${row.customer._id}`);
             }}
           >
-            {`${row.customer.first_name} ${row.customer.last_name}`}
+            <Stack>
+              <p
+                style={{ fontSize: "16px" }}
+              >{`${row.customer.first_name} ${row.customer.last_name}`}</p>
+              <p style={{ color: "#878787" }}>{row.customer.email}</p>
+            </Stack>
           </TableCell>
 
           <TableCell
@@ -209,7 +214,7 @@ export default function OrdersTable() {
               textOverflow: "ellipsis",
             }}
           >
-            {row.status}
+            {listStatusObject[row.status]}
           </TableCell>
           <TableCell
             align="left"

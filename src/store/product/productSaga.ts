@@ -7,10 +7,10 @@ import ProductApi from "../../api/product";
 function* handleGetListOrders(action: Action) {
   try {
     let params;
-    if (action.payload.per_page) {
+    if (action.payload.page_size) {
       params = action.payload;
     } else {
-      params = { page: 1, per_page: 10 };
+      params = { page: 1, page_size: 10 };
     }
     const response: { data: any; headers: any } = yield call(
       ProductApi.getListProducts,
@@ -19,10 +19,10 @@ function* handleGetListOrders(action: Action) {
     const payload = {
       data: response.data,
       paginate: {
-        limit: action.payload.per_page || 10,
+        limit: action.payload.page_size || 10,
         page: action.payload.page || 1,
         total_page: response.headers["x-wp-totalpages"],
-        total_records: response.headers["x-wp-total"],
+        totalItems: response.headers["x-wp-total"],
       },
     };
     yield put(productActions.getListProductsSuccess(payload));

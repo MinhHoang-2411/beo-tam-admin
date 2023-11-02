@@ -20,10 +20,10 @@ const MemberPage = () => {
   const pagination = useAppSelector((state) => state.product2.pagination);
   const [searchProduct, setSearchProduct] = useState("");
   const [params, setParams] = useState<{
-    per_page: number;
+    page_size: number;
     page: number;
     name?: string;
-  }>({ per_page: 10, page: 1 });
+  }>({ page_size: 10, page: 1 });
   const [productStatusLabel, setProductStatus] = useState("");
   const [listStatus] = useState([
     { label: "Đã hoàn thành", value: 1 },

@@ -5,14 +5,14 @@ export const debounceSearch = _.debounce(
     value: string,
     setParams: React.Dispatch<
       React.SetStateAction<{
-        per_page: number;
+        page_size: number;
         page: number;
-        name?: string;
+        search?: string;
       }>
     >
   ) => {
     setParams((prevParams) => {
-      return { ...prevParams, page: 1, name: value };
+      return { ...prevParams, page: 1, search: value };
     });
   },
   500

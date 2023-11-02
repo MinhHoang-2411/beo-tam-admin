@@ -4,14 +4,32 @@ import { DetailAdmin, DetailCustomer } from "../../types/user";
 import userApi from "../../api/user";
 import { userActions } from "./userSlice";
 import { Action } from "../../types/actions";
+import { Pagination } from "../../types/pagination";
 
 function* handleGetListAdmin() {
   try {
-    const response: { data: { data: { items: DetailAdmin[] } } } = yield call(
-      userApi.getListAdmin
-    );
+    const response: {
+      data: {
+        data: {
+          items: DetailAdmin[];
+          page: number;
+          pageSize: number;
+          totalItems: number;
+          totalPages: number;
+        };
+      };
+    } = yield call(userApi.getListAdmin);
     console.log(response.data.data.items);
-    yield put(userActions.getListAdminSuccess(response.data.data.items));
+    const payload = {
+      data: response.data.data.items,
+      pagination: {
+        limit: response.data.data.pageSize,
+        page: response.data.data.page,
+        total_page: response.data.data.totalPages,
+        totalItems: response.data.data.totalItems,
+      },
+    };
+    yield put(userActions.getListAdminSuccess(payload));
   } catch (error) {
     yield put(userActions.getListAdminFailed());
     yield put(
@@ -46,10 +64,28 @@ function* handleGetDetailAdmin(action: Action) {
 
 function* handleGetListCustomer() {
   try {
-    const response: { data: { data: { items: DetailCustomer[] } } } =
-      yield call(userApi.getListCustomer);
+    const response: {
+      data: {
+        data: {
+          items: DetailCustomer[];
+          page: number;
+          pageSize: number;
+          totalItems: number;
+          totalPages: number;
+        };
+      };
+    } = yield call(userApi.getListCustomer);
     console.log(response.data.data.items);
-    yield put(userActions.getListCustomerSuccess(response.data.data.items));
+    const payload = {
+      data: response.data.data.items,
+      pagination: {
+        limit: response.data.data.pageSize,
+        page: response.data.data.page,
+        total_page: response.data.data.totalPages,
+        totalItems: response.data.data.totalItems,
+      },
+    };
+    yield put(userActions.getListCustomerSuccess(payload));
   } catch (error) {
     yield put(userActions.getListCustomerFailed());
     yield put(

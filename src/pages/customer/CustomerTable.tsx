@@ -131,7 +131,7 @@ export default function CustomerTable() {
               href={`/customer/${row._id}`}
               style={{
                 textDecoration: "underline",
-                color : "#0076CE"
+                color: "#0076CE",
               }}
             >
               {row.woo_user_id}
