@@ -3,14 +3,15 @@ import { Action } from "../../types/actions";
 import { orderActions } from "./orderSlice";
 import OrderApi from "../../api/order";
 import { alertActions } from "../alert/alertSlice";
+import { layoutActions } from "../layout/layoutSlice";
 
 function* handleGetListOrders(action: Action) {
   try {
     let params;
-    if (action.payload.per_page) {
+    if (action.payload.page_size) {
       params = action.payload;
     } else {
-      params = { page: 1, per_page: 10 };
+      params = { page: 1, page_size: 10 };
     }
     const response: { data: { data: any } } = yield call(
       OrderApi.getListOrders,
@@ -20,10 +21,10 @@ function* handleGetListOrders(action: Action) {
     const payload = {
       data: response.data.data.items,
       paginate: {
-        limit: action.payload.per_page || 10,
+        limit: action.payload.page_size || 10,
         page: action.payload.page || 1,
         total_page: response.data.data.totalPages,
-        total_records: response.data.data.totalItem,
+        totalItems: response.data.data.totalItems,
       },
     };
     yield put(orderActions.getListOrdersSuccess(payload));
@@ -58,10 +59,37 @@ function* handleGetDetailOrder(action: Action) {
   }
 }
 
+function* handleDeleteOrder(action: Action) {
+  try {
+    const id = action.payload;
+    yield put(layoutActions.startLayoutLoading());
+    yield call(OrderApi.deleteOrder, id);
+    yield put(orderActions.deleteOrderSuccess());
+    yield put(orderActions.getListOrders({}));
+    yield put(layoutActions.endLayoutLoading());
+    yield put(
+      alertActions.showAlert({
+        text: "Xóa đơn hàng thành công",
+        type: "success",
+      })
+    );
+  } catch (error) {
+    yield put(layoutActions.endLayoutLoading());
+    yield put(orderActions.deleteOrderFailed());
+    yield put(
+      alertActions.showAlert({
+        text: "Xóa đơn hàng thất bại",
+        type: "error",
+      })
+    );
+  }
+}
+
 function* watchOrderFlow() {
   yield all([
     takeLatest(orderActions.getListOrders.type, handleGetListOrders),
     takeLatest(orderActions.getOrderDetail.type, handleGetDetailOrder),
+    takeLatest(orderActions.deleteOrder.type, handleDeleteOrder),
   ]);
 }
 

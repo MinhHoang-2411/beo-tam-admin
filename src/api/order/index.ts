@@ -15,6 +15,10 @@ const OrderApi = {
     const url = `${URL_API_APP}order/${id}`;
     return axiosClient.get(url);
   },
+  deleteOrder(id: any) {
+    const url = `${URL_API_APP}order/${id}`;
+    return axiosClient.delete(url);
+  },
 };
 
 export default OrderApi;

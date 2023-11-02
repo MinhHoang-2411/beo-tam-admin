@@ -20,12 +20,13 @@ import { layoutActions } from "../../store/layout/layoutSlice";
 
 const AdminPage = () => {
   const dispatch = useAppDispatch();
+  const pagination = useAppSelector((state) => state.user.paginationAdmin);
   const [searchAdmin, setSearchAdmin] = useState("");
   const [params, setParams] = useState<{
-    per_page: number;
+    page_size: number;
     page: number;
     name?: string;
-  }>({ per_page: 10, page: 1 });
+  }>({ page_size: 10, page: 1 });
 
   const debounceSearchListOrders = useCallback(debounceSearch, []);
 
@@ -81,6 +82,13 @@ const AdminPage = () => {
       </Stack>
       <Stack sx={{ minHeight: "85vh" }} justifyContent="space-between">
         <AdminTable />
+        <Stack sx={{ py: "20px" }}>
+          <Pagination
+            count={pagination ? totalPagePagination(pagination) : 1}
+            page={pagination?.page || 1}
+            onChange={handlePagination}
+          />
+        </Stack>
       </Stack>
     </>
   );

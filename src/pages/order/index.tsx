@@ -20,18 +20,22 @@ const MemberPage = () => {
   const pagination = useAppSelector((state) => state.order.pagination);
   const [searchOrder, setSearchOrder] = useState("");
   const [params, setParams] = useState<{
-    per_page: number;
+    page_size: number;
     page: number;
-    name?: string;
-  }>({ per_page: 10, page: 1 });
+    search?: string;
+    status?: string;
+  }>({ page_size: 10, page: 1 });
   const [orderStatusLabel, setProductStatus] = useState("");
   const [listStatus] = useState([
-    { label: "Đã hoàn thành", value: 1 },
-    { label: "Thất bại", value: 2 },
-    { label: "Đang triển khai", value: 3 },
-    // { label: "Chưa yêu cầu", value: 3 },
-    // { label: "Đã từ chối", value: 4 },
-    // { label: "Chờ duyệt", value: 5 },
+    { label: "Tất cả", value: "" },
+    { label: "Đang xử lý", value: "pending" },
+    { label: "Chờ thanh toán", value: "processing" },
+    { label: "Tạm giữ", value: "on-hold" },
+    { label: "Đã hoàn thành", value: "completed" },
+    { label: "Đã hủy", value: "cancelled" },
+    { label: "Đã hoàn lại tiền", value: "refunded" },
+    { label: "Thất bại", value: "failed" },
+    { label: "Đã xóa", value: "Draft" },
   ]);
 
   const debounceSearchListOrders = useCallback(debounceSearch, []);
@@ -44,7 +48,7 @@ const MemberPage = () => {
 
   const handleSearchProduct = (value: string) => {
     setSearchOrder(value);
-    // debounceSearchListOrders(value.trim(), setParams);
+    debounceSearchListOrders(value.trim(), setParams);
   };
 
   useEffect(() => {
@@ -84,11 +88,19 @@ const MemberPage = () => {
           value={orderStatusLabel}
           InputLabelProps={{ shrink: !!orderStatusLabel }}
           onChange={(e: any) => {
-            // setParams((prevState) => ({
-            //   ...prevState,
-            //   status: e.target.value,
-            //   page: 1,
-            // }));
+            if (e.target.value) {
+              setParams((prevState) => ({
+                ...prevState,
+                status: e.target.value,
+                page: 1,
+              }));
+            } else {
+              setParams((prevState) => ({
+                page_size: prevState.page_size,
+                search: prevState.search,
+                page: 1,
+              }));
+            }
             setProductStatus(e.target.value);
           }}
         >

@@ -67,7 +67,7 @@ const handleErrorApi = (status: number) => {
   switch (status) {
     case 401:
     case 403:
-      // handleLogout();
+      handleLogout();
       break;
 
     case 500:

@@ -8,6 +8,7 @@ interface orderState {
   OrderDetail: null | OrderDetail;
   loadingGetDetailOrder: boolean;
   pagination: null | Pagination;
+  loadingCRUDOrder: boolean;
 }
 
 const initialState: orderState = {
@@ -16,6 +17,7 @@ const initialState: orderState = {
   OrderDetail: null,
   loadingGetDetailOrder: false,
   pagination: null,
+  loadingCRUDOrder: false,
 };
 
 const order = createSlice({
@@ -45,6 +47,16 @@ const order = createSlice({
     getOrderDetailFailed(state) {
       state.loadingGetDetailOrder = false;
       state.OrderDetail = null;
+    },
+
+    deleteOrder(state, action) {
+      state.loadingCRUDOrder = true;
+    },
+    deleteOrderSuccess(state) {
+      state.loadingCRUDOrder = false;
+    },
+    deleteOrderFailed(state) {
+      state.loadingCRUDOrder = false;
     },
 
     chooseOrderDetail(state, action) {
