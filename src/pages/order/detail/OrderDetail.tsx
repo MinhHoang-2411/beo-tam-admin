@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../hooks/store";
 import { orderActions } from "../../../store/order/orderSlice";
 import {
@@ -28,6 +28,16 @@ const OrderDetail = () => {
   const loadingOrderDetail = useAppSelector(
     (state) => state.order.loadingGetDetailOrder
   );
+  const [listStatusObject] = useState<any>({
+    pending: "Đang xử lý",
+    processing: "Chờ thanh toán",
+    "on-hold": "Tạm giữ",
+    completed: "Đã hoàn thành",
+    cancelled: "Đã hủy",
+    refunded: "Đã hoàn lại tiền",
+    failed: "Thất bại",
+    Draft: "Đã xóa",
+  });
   useEffect(() => {
     dispatch(orderActions.getOrderDetail(id));
     return () => {
@@ -226,7 +236,9 @@ const OrderDetail = () => {
             >
               Trạng thái:{" "}
             </Typography>
-            <p style={{ color: "#000" }}>{orderDetail?.status}</p>
+            <p style={{ color: "#000" }}>
+              {listStatusObject[orderDetail?.status as string]}
+            </p>
             <Typography
               variant="h6"
               fontWeight={600}
