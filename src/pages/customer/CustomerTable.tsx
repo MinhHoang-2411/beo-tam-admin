@@ -89,6 +89,13 @@ export default function CustomerTable() {
       label: "ID",
       fontSize: "15px",
     },
+     {
+      id: "customerUserName",
+      align: "left",
+      disablePadding: false,
+      label: "Tên đăng nhập",
+      fontSize: "15px",
+    },
     {
       id: "customerName",
       align: "left",
@@ -138,6 +145,17 @@ export default function CustomerTable() {
             </a>
           </TableCell>
 
+          <TableCell align="left" className="table-cell">
+            <a
+              href={`/customer/${row._id}`}
+              style={{
+                color: "#0076CE",
+              }}
+            >
+              {row.username}
+            </a>
+          </TableCell>
+
           <TableCell
             align="left"
             className="table-cell"
@@ -152,7 +170,7 @@ export default function CustomerTable() {
               cursor: "pointer",
             }}
           >
-            {`${row.first_name} ${row.last_name}`}
+            {(row.first_name || row.last_name) ? `${row.first_name} ${row.last_name}` : 'Chưa cập nhật'}
           </TableCell>
 
           <TableCell

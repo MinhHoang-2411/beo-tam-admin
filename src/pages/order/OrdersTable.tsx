@@ -126,17 +126,17 @@ export default function OrdersTable() {
       fontSize: "15px",
     },
     {
-      id: "payment-method",
-      align: "left",
-      disablePadding: false,
-      label: "Phương thức thanh toán",
-      fontSize: "15px",
-    },
-    {
       id: "total",
       align: "left",
       disablePadding: false,
       label: "Tổng tiền",
+      fontSize: "15px",
+    },
+    {
+      id: "payment-method",
+      align: "left",
+      disablePadding: false,
+      label: "Phương thức thanh toán",
       fontSize: "15px",
     },
     {
@@ -235,6 +235,18 @@ export default function OrdersTable() {
             align="left"
             className="table-cell"
             sx={{
+              minWidth: 100,
+              maxWidth: 100,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {`${convertNumberFormat(row.total)}đ`}
+          </TableCell>
+          <TableCell
+            align="left"
+            className="table-cell"
+            sx={{
               minWidth: 150,
               maxWidth: 150,
               overflow: "hidden",
@@ -245,18 +257,6 @@ export default function OrdersTable() {
               payment={row.payment_method}
               paymentTitle={row.payment_method_title}
             />
-          </TableCell>
-          <TableCell
-            align="left"
-            className="table-cell"
-            sx={{
-              minWidth: 100,
-              maxWidth: 100,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {`${convertNumberFormat(row.total)}đ`}
           </TableCell>
           <TableCell align="left" className="table-cell">
             <Box>

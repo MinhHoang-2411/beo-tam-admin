@@ -636,7 +636,7 @@ const CustomerDetail = () => {
                     helperText={errors.shipping?.phone?.message}
                   />
                 </Stack>
-                <Stack direction="row" spacing={1}>
+                <Stack direction="row" spacing={2} paddingTop={2}>
                   <CustomButton
                     color="primary"
                     label="Chỉnh sửa"

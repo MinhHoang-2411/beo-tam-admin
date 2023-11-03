@@ -21,7 +21,7 @@ const ChipPayment = ({ payment, paymentTitle }: IChipPayment) => {
         borderRadius: "4px",
         textAlign: "center",
         minWidth: "100px",
-        maxWidth: "200px",
+        maxWidth: "160px",
       }}
     >
       {paymentTitle}
