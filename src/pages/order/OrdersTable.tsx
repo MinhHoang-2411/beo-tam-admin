@@ -31,6 +31,8 @@ import { convertDateWooCommerce } from "../../utils/convertDate";
 import { orderActions } from "../../store/order/orderSlice";
 import { useNavigate } from "react-router-dom";
 import { convertNumberFormat } from "../../utils/numberFormat";
+import ChipStatus from "../../components/Chip/ChipStatus";
+import ChipPayment from "../../components/Chip/ChipPaymentMethod";
 
 export default function OrdersTable() {
   const navigate = useNavigate();
@@ -111,7 +113,7 @@ export default function OrdersTable() {
 
     {
       id: "status",
-      align: "left",
+      align: "center",
       disablePadding: false,
       label: "Trạng thái",
       fontSize: "15px",
@@ -181,7 +183,8 @@ export default function OrdersTable() {
           </TableCell>
           <TableCell
             sx={{
-              minWidth: 150,
+              minWidth: 200,
+
               overflow: "hidden",
               textOverflow: "ellipsis",
               "&:hover": {
@@ -214,7 +217,7 @@ export default function OrdersTable() {
               textOverflow: "ellipsis",
             }}
           >
-            {listStatusObject[row.status]}
+            <ChipStatus status={row.status} />
           </TableCell>
           <TableCell
             align="left"
@@ -238,7 +241,10 @@ export default function OrdersTable() {
               textOverflow: "ellipsis",
             }}
           >
-            {row.payment_method_title}
+            <ChipPayment
+              payment={row.payment_method}
+              paymentTitle={row.payment_method_title}
+            />
           </TableCell>
           <TableCell
             align="left"
