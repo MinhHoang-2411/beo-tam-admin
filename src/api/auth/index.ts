@@ -1,3 +1,4 @@
+import axios from "axios";
 import axiosClient from "../axiosClient";
 
 const authApi = {
@@ -6,8 +7,8 @@ const authApi = {
     return axiosClient.post(url, params);
   },
   refreshToken(params: any) {
-    const url = "/auth/refresh-token";
-    return axiosClient.post(url, params);
+    const url = "https://beotam-api.stdio.asia/auth/refresh-token";
+    return axios.post(url, params);
   },
 };
 
