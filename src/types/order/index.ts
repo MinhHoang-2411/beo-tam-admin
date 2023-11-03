@@ -49,11 +49,19 @@ export interface Order {
   detail: string;
   discount_tax: string;
   discount_total: string;
-  payment_method: string;
+  payment_method: "momo_qr_scan" | "bacs" | "cod";
   payment_method_title: string;
   shipping_tax: string;
   shipping_total: string;
-  status: string;
+  status:
+    | "pending"
+    | "processing"
+    | "on-hold"
+    | "completed"
+    | "cancelled"
+    | "refunded"
+    | "failed"
+    | "Draft";
   total: string;
   total_tax: string;
   woo_customer_id: string;
