@@ -19,20 +19,14 @@ axiosClient.defaults.headers.Accept = "application/json";
 // Add a request interceptor
 axiosClient.interceptors.request.use(
   async function (config: any) {
-    let access_token = localStorage.getItem("access_token");
-    let refresh_token = localStorage.getItem("refreshToken");
+    const access_token = localStorage.getItem("access_token");
+    const refresh_token = localStorage.getItem("refresh_token");
     if (access_token) {
       if (refresh_token && isTokenExpired(refresh_token as string)) {
         handleLogout();
       }
       if (isTokenExpired(access_token)) {
-        const response = await authApi.refreshToken({
-          refresh_token: refresh_token,
-        });
-        access_token = response.data.data.access_token;
-        refresh_token = response.data.data.refresh_token;
-        localStorage.setItem("access_token", response.data.data.access_token);
-        localStorage.setItem("refresh_token", response.data.data.refresh_token);
+        console.log("token hết hạn");
       }
       config.headers = {
         Authorization: `Bearer ${access_token}`,
@@ -53,9 +47,26 @@ axiosClient.interceptors.response.use(
     // Do something with response data
     return response;
   },
-  function (error) {
+  async function (error) {
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
+    const refresh_token = localStorage.getItem("refresh_token");
+    const originalRequest = error.config;
+    console.log({ originalRequest });
+    if (
+      (error.response.status === 403 || error.response.status === 401) &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+      const response = await authApi.refreshToken({
+        refresh_token,
+      });
+      axios.defaults.headers.common["Authorization"] =
+        "Bearer " + response.data.data.access_token;
+      localStorage.setItem("access_token", response.data.data.access_token);
+      localStorage.setItem("refresh_token", response.data.data.refresh_token);
+      return axiosClient(originalRequest);
+    }
     if (error?.response) {
       handleErrorApi(error?.response?.status);
     }

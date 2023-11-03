@@ -5,7 +5,9 @@ export default function isTokenExpired(token: string | undefined): boolean {
     if (token) {
       const decodedToken: any = jwt_decode(token);
       const currentTime = Math.floor(Date.now() / 1000);
-      return decodedToken.exp && currentTime > decodedToken.exp;
+      console.log({ decodedToken, currentTime });
+      console.log("result", currentTime > decodedToken.exp);
+      return decodedToken.exp ? currentTime > decodedToken.exp : true;
     }
     return true;
   } catch (error) {
