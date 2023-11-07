@@ -16,6 +16,7 @@ import OrderTableHead from "../../components/table/OrderTableHead";
 
 // icon
 import CancelIcon from "@mui/icons-material/Cancel";
+import InfoIcon from "@mui/icons-material/Info";
 
 // empty
 import Empty from "../../components/table/Empty";
@@ -29,11 +30,14 @@ import LoadingPage from "../../components/LoadingPage";
 import { Order } from "../../types/order";
 import { convertDateWooCommerce } from "../../utils/convertDate";
 import { Product } from "../../types/product";
+import { convertNumberFormat } from "../../utils/numberFormat";
+import { useNavigate } from "react-router-dom";
 
 export default function ProductsTable() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { listProducts, loadingGetListProducts } = useAppSelector(
-    (state) => state.product2
+    (state) => state.product
   );
   const [listStatusObject] = useState<any>({
     completed: "Đã hoàn thành",
@@ -106,13 +110,13 @@ export default function ProductsTable() {
       label: "Giá",
       fontSize: "15px",
     },
-    {
-      id: "date",
-      align: "left",
-      disablePadding: false,
-      label: "Ngày tạo",
-      fontSize: "15px",
-    },
+    // {
+    //   id: "date",
+    //   align: "left",
+    //   disablePadding: false,
+    //   label: "Ngày tạo",
+    //   fontSize: "15px",
+    // },
     {
       id: "status",
       align: "left",
@@ -137,14 +141,14 @@ export default function ProductsTable() {
           <TableCell component="th" scope="row" align="left">
             <Checkbox
               color="secondary"
-              value={row?.id}
-              checked={listChecked?.includes(row?.id)}
+              value={row?._id}
+              checked={listChecked?.includes(row?._id)}
               onChange={handleChecked}
             />
           </TableCell>
 
           <TableCell align="left" className="table-cell">
-            {row.id}
+            {row._id}
           </TableCell>
 
           <TableCell
@@ -178,9 +182,9 @@ export default function ProductsTable() {
               textOverflow: "ellipsis",
             }}
           >
-            {row.price}
+            {`${convertNumberFormat(row.price)}đ`}
           </TableCell>
-          <TableCell
+          {/* <TableCell
             align="left"
             className="table-cell"
             sx={{
@@ -191,7 +195,7 @@ export default function ProductsTable() {
             }}
           >
             {convertDateWooCommerce(row.date_created_gmt)}
-          </TableCell>
+          </TableCell> */}
           <TableCell
             align="left"
             className="table-cell"
@@ -216,6 +220,17 @@ export default function ProductsTable() {
                   color="error"
                 >
                   <CancelIcon fontSize="medium" />
+                </IconButton>
+                <IconButton
+                  sx={{ marginLeft: "0px" }}
+                  aria-label="info"
+                  onClick={(e) => {
+                    // dispatch(orderActions.chooseOrderDetail(row));
+                    navigate(`/products/${row._id}`);
+                  }}
+                  color="primary"
+                >
+                  <InfoIcon fontSize="medium" />
                 </IconButton>
               </Stack>
             </Box>

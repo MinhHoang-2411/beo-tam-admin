@@ -6,6 +6,7 @@ interface orderState {
   listProducts: Product[] | null;
   loadingGetListProducts: boolean;
   productDetail: null | Product;
+  loadingGetDetailProduct: boolean;
   pagination: null | Pagination;
 }
 
@@ -13,6 +14,7 @@ const initialState: orderState = {
   listProducts: null,
   loadingGetListProducts: false,
   productDetail: null,
+  loadingGetDetailProduct: false,
   pagination: null,
 };
 
@@ -32,10 +34,18 @@ const product = createSlice({
       state.loadingGetListProducts = false;
       state.listProducts = [];
     },
-    chooseProductDetail(state, action) {
+    getProductDetail(state, action) {
+      state.loadingGetDetailProduct = true;
+    },
+    getProductDetailSuccess(state, action) {
+      state.loadingGetDetailProduct = false;
       state.productDetail = action.payload;
     },
-    resetProductDetail(state, action) {
+    getProductDetailFailed(state) {
+      state.loadingGetDetailProduct = false;
+      state.productDetail = null;
+    },
+    resetProductDetail(state) {
       state.productDetail = null;
     },
   },

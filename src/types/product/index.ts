@@ -1,72 +1,22 @@
 export interface Product {
-  id: number;
+  _id: string;
   name: string;
   slug: string;
-  permalink: string;
-  date_created: string;
-  date_created_gmt: string;
-  date_modified: string;
-  date_modified_gmt: string;
-  type: any;
-  status: any;
-  featured: false;
-  catalog_visibility: any;
+  type: string;
+  status: string;
+  catalog_visibility: string;
   description: string;
   sku: string;
   price: string;
   regular_price: string;
   sale_price: string;
-  date_on_sale_from: string;
-  date_on_sale_from_gmt: string;
-  date_on_sale_to: string;
-  date_on_sale_to_gmt: string;
+  date_on_sale_from: string | null;
+  date_on_sale_to: string | null;
   on_sale: boolean;
   purchasable: boolean;
-  total_sales: number;
-  virtual: boolean;
-  downloadable: boolean;
-  downloads: any;
-  download_limit: any;
-  download_expiry: any;
-  external_url: string;
-  button_text: string;
-  tax_status: any;
-  tax_class: any;
-  manage_stock: boolean;
-  stock_quantity: any;
-  backorders: any;
-  backorders_allowed: boolean;
-  backordered: boolean;
-  low_stock_amount: any;
-  sold_individually: boolean;
-  weight: any;
-  dimensions: any;
-  shipping_required: boolean;
-  shipping_taxable: boolean;
-  shipping_class: any;
-  shipping_class_id: number;
-  reviews_allowed: boolean;
-  average_rating: string;
-  rating_count: number;
-  upsell_ids: any;
-  cross_sell_ids: any;
-  parent_id: number;
-  purchase_note: any;
-  categories: any;
-  tags: any;
   images: Image[];
-  attributes: any;
-  default_attributes: any;
-  variations: any;
-  grouped_products: any;
-  menu_order: any;
-  price_html: string;
-  related_ids: any;
-  meta_data: any;
-  stock_status: any;
-  has_options: boolean;
-  post_password: any;
-  _links: any;
+  detail: ProductDetail;
+  __v: number;
 }
 
 export interface Image {
@@ -78,4 +28,53 @@ export interface Image {
   src: string;
   name: string;
   alt: string;
+}
+
+export interface ProductDetail {
+  _id: string;
+  tax_status: string;
+  tax_class: string;
+  stock_status: string;
+  manage_stock: boolean;
+  stock_quantity: null | number;
+  backorders: string;
+  backorders_allowed: boolean;
+  backordered: boolean;
+  low_stock_amount: null | number;
+  sold_individually: boolean;
+  weight: string;
+  dimensions: {
+    length: string;
+    width: string;
+    height: string;
+  };
+  reviews_allowed: boolean;
+  average_rating: string;
+  rating_count: number;
+  parent_id: any;
+  purchase_note: string;
+  menu_order: number;
+  date_created: string;
+  date_modified: string;
+  shipping_required: boolean;
+  shipping_taxable: boolean;
+  shipping_class: string;
+  shipping_class_id: any;
+  upsell_ids: any[];
+  cross_sell_ids: any[];
+  categories: [
+    {
+      id: any;
+      name: string;
+      slug: string;
+    }
+  ];
+  tags: any[];
+  attributes: any[];
+  default_attributes: any[];
+  variations: any[];
+  grouped_products: any[];
+  related_ids: any[];
+  meta_data: any[];
+  __v: number;
 }

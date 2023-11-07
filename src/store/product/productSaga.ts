@@ -4,7 +4,7 @@ import { productActions } from "./productSlice";
 import { alertActions } from "../alert/alertSlice";
 import ProductApi from "../../api/product";
 
-function* handleGetListOrders(action: Action) {
+function* handleGetListProducts(action: Action) {
   try {
     let params;
     if (action.payload.page_size) {
@@ -17,12 +17,12 @@ function* handleGetListOrders(action: Action) {
       params
     );
     const payload = {
-      data: response.data,
+      data: response.data.data.items,
       paginate: {
         limit: action.payload.page_size || 10,
         page: action.payload.page || 1,
-        total_page: response.headers["x-wp-totalpages"],
-        totalItems: response.headers["x-wp-total"],
+        total_page: response.data.data.totalPages,
+        totalItems: response.data.data.totalItems,
       },
     };
     yield put(productActions.getListProductsSuccess(payload));
@@ -37,9 +37,28 @@ function* handleGetListOrders(action: Action) {
   }
 }
 
+function* handleGetProductDetail(action: Action) {
+  try {
+    const response: { data: any; headers: any } = yield call(
+      ProductApi.getDetailProduct,
+      action.payload
+    );
+    yield put(productActions.getProductDetailSuccess(response.data.data));
+  } catch (error) {
+    yield put(productActions.getProductDetailFailed());
+    yield put(
+      alertActions.showAlert({
+        text: "Không thể lấy thông tin sản phẩm",
+        type: "error",
+      })
+    );
+  }
+}
+
 function* watchProductFlow() {
   yield all([
-    takeLatest(productActions.getListProducts.type, handleGetListOrders),
+    takeLatest(productActions.getListProducts.type, handleGetListProducts),
+    takeLatest(productActions.getProductDetail.type, handleGetProductDetail),
   ]);
 }
 
