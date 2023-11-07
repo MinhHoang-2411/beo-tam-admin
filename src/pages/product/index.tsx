@@ -17,7 +17,7 @@ import { productActions } from "../../store/product/productSlice";
 
 const MemberPage = () => {
   const dispatch = useAppDispatch();
-  const pagination = useAppSelector((state) => state.product2.pagination);
+  const pagination = useAppSelector((state) => state.product.pagination);
   const [searchProduct, setSearchProduct] = useState("");
   const [params, setParams] = useState<{
     page_size: number;
