@@ -32,6 +32,7 @@ import { convertDateWooCommerce } from "../../utils/convertDate";
 import { Product } from "../../types/product";
 import { convertNumberFormat } from "../../utils/numberFormat";
 import { useNavigate } from "react-router-dom";
+import ChipProductType from "../../components/Chip/ChipProduct";
 
 export default function ProductsTable() {
   const navigate = useNavigate();
@@ -119,7 +120,7 @@ export default function ProductsTable() {
     // },
     {
       id: "status",
-      align: "left",
+      align: "center",
       disablePadding: false,
       label: "Trạng thái",
       fontSize: "15px",
@@ -148,7 +149,7 @@ export default function ProductsTable() {
           </TableCell>
 
           <TableCell align="left" className="table-cell">
-            {row._id}
+            {row.woo_product_id}
           </TableCell>
 
           <TableCell
@@ -156,13 +157,13 @@ export default function ProductsTable() {
             className="table-cell"
             sx={{
               minWidth: 150,
-              maxWidth: 250,
+              maxWidth: 280,
               overflow: "hidden",
             }}
           >
             <Stack direction="row" spacing={1} alignItems="center">
               <img
-                style={{ width: "70px" }}
+                style={{ width: "70px", height: "50px", objectFit: "contain" }}
                 src={row.images[0]?.src || noImage}
                 alt={row.images[0]?.alt || "no-img"}
               />
@@ -177,7 +178,7 @@ export default function ProductsTable() {
             className="table-cell"
             sx={{
               minWidth: 90,
-              maxWidth: 150,
+              maxWidth: 100,
               overflow: "hidden",
               textOverflow: "ellipsis",
             }}
@@ -201,12 +202,12 @@ export default function ProductsTable() {
             className="table-cell"
             sx={{
               minWidth: 100,
-              maxWidth: 150,
+              maxWidth: 120,
               overflow: "hidden",
               textOverflow: "ellipsis",
             }}
           >
-            {row.status}
+            <ChipProductType type={row.status} />
           </TableCell>
           <TableCell align="left" className="table-cell">
             <Box>

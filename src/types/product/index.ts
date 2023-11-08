@@ -1,11 +1,13 @@
 export interface Product {
   _id: string;
+  woo_product_id: string;
   name: string;
   slug: string;
   type: string;
-  status: string;
+  status: "publish" | "private";
   catalog_visibility: string;
   description: string;
+  short_description: string;
   sku: string;
   price: string;
   regular_price: string;
@@ -69,7 +71,7 @@ export interface ProductDetail {
       slug: string;
     }
   ];
-  tags: any[];
+  tags: { id: any; name: string; slug: string }[];
   attributes: any[];
   default_attributes: any[];
   variations: any[];
