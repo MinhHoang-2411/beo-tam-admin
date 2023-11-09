@@ -148,7 +148,24 @@ export default function ProductsTable() {
             />
           </TableCell>
 
-          <TableCell align="left" className="table-cell">
+          <TableCell
+            align="left"
+            className="table-cell"
+            onClick={() => {
+              navigate(`/products/${row._id}`);
+            }}
+            sx={{
+              minWidth: 100,
+              maxWidth: 100,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              "&:hover": {
+                color: "#52A186",
+                fontWeight: 700,
+              },
+              cursor: "pointer",
+            }}
+          >
             {row.woo_product_id}
           </TableCell>
 

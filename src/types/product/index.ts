@@ -17,6 +17,14 @@ export interface Product {
   on_sale: boolean;
   purchasable: boolean;
   images: Image[];
+  categories: [
+    {
+      id: any;
+      name: string;
+      slug: string;
+    }
+  ];
+  tags: { id: any; name: string; slug: string }[];
   detail: ProductDetail;
   __v: number;
 }
@@ -64,14 +72,6 @@ export interface ProductDetail {
   shipping_class_id: any;
   upsell_ids: any[];
   cross_sell_ids: any[];
-  categories: [
-    {
-      id: any;
-      name: string;
-      slug: string;
-    }
-  ];
-  tags: { id: any; name: string; slug: string }[];
   attributes: any[];
   default_attributes: any[];
   variations: any[];

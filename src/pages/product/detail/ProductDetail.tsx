@@ -19,7 +19,7 @@ const ProductDetail = () => {
   const loadingProductDetail = useAppSelector(
     (state) => state.product.loadingGetDetailProduct
   );
-  const [urlSelected, setUrlSelected] = useState(product?.images[0].src);
+  const [urlSelected, setUrlSelected] = useState(product?.images[0]?.src);
   const [valueTab, setValueTab] = useState(0);
 
   //tab
@@ -41,7 +41,7 @@ const ProductDetail = () => {
   }, []);
 
   useEffect(() => {
-    setUrlSelected(product?.images[0].src);
+    setUrlSelected(product?.images[0]?.src);
   }, [product]);
 
   return loadingProductDetail ? (
@@ -93,14 +93,14 @@ const ProductDetail = () => {
               </Typography>
               <Typography variant="h6" sx={{ color: "#767676" }}>
                 <b>Danh mục:</b>{" "}
-                {product?.detail.categories.map((prod) => prod.name).join(", ")}
+                {product?.categories.map((prod) => prod.name).join(", ")}
               </Typography>
               <Typography variant="h6" sx={{ color: "#767676" }}>
                 <b>Mã sản phẩm:</b> {product?.sku}
               </Typography>
               <Typography variant="h6" sx={{ color: "#767676" }}>
                 <b>Từ khóa:</b>{" "}
-                {product?.detail.tags.map((prod) => prod.name).join(", ")}
+                {product?.tags.map((prod) => prod.name).join(", ")}
               </Typography>
             </Stack>
           </Stack>
