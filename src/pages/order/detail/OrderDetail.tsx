@@ -159,13 +159,13 @@ const OrderDetail = () => {
               <img src={deliveryImg} alt="ship-img" style={{ width: "70px" }} />
               <Stack>
                 <p>{row.method_title}</p>
-                {row.meta_data
+                {row.meta_data ? row.meta_data
                   .filter((val) => val.display_key == "Mặt hàng")
                   .map((item) => (
                     <p>
                       {item.display_key}: {item.display_value}
                     </p>
-                  ))}
+                  )) : ''}
               </Stack>
             </Stack>
           </TableCell>
