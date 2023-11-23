@@ -65,6 +65,16 @@ const order = createSlice({
     resetOrderDetail(state) {
       state.OrderDetail = null;
     },
+
+    createOrder(state,action){
+      state.loadingCRUDOrder = true
+    },
+    createOrderSuccess(state){
+      state.loadingCRUDOrder = false
+    },
+    createOrderFailed(state){
+      state.loadingCRUDOrder = false
+    }
   },
 });
 

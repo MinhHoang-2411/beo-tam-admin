@@ -23,22 +23,18 @@ const styleDropzone = {
 
 interface IDropzone {
   maxFile: number;
-  onUploadImage?: any;
   onUploadTemporaryImage?: any;
-  typeAppend: string;
   Icon?: any;
   width?: any;
-  id?: number;
+  height?: any;
 }
 
 const DropzoneCustom = ({
   maxFile,
-  typeAppend,
-  onUploadImage,
   onUploadTemporaryImage,
   Icon,
   width,
-  id,
+  height,
 }: IDropzone) => {
   const onDrop = useCallback((acceptedFiles: any) => {
     try {
@@ -48,17 +44,7 @@ const DropzoneCustom = ({
         })
       );
       console.log({ newFiles });
-      const formdata: any = new FormData();
-      newFiles.forEach((file: File) => formdata.append(typeAppend, file));
-
-      //id = 0 cx false nha may, dcm hay quen qua
-      if (id) {
-        onUploadTemporaryImage(newFiles, id);
-        console.log(id);
-      } else {
-        onUploadTemporaryImage(newFiles);
-      }
-      onUploadImage(formdata);
+      onUploadTemporaryImage(newFiles);
     } catch (error) {
       console.log(error);
     }
@@ -80,7 +66,11 @@ const DropzoneCustom = ({
   return (
     <Box
       {...getRootProps()}
-      sx={{ ...styleDropzone, width: width ? width : "100%" }}
+      sx={{
+        ...styleDropzone,
+        width: width ? width : "100%",
+        height: height ? height : "unset",
+      }}
     >
       <input {...getInputProps()} />
       {Icon ? (

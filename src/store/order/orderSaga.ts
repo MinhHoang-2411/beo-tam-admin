@@ -85,11 +85,38 @@ function* handleDeleteOrder(action: Action) {
   }
 }
 
+function* handleCreateOrder(action: Action) {
+  try {
+    const params = action.payload.data;
+    yield put(layoutActions.startLayoutLoading());
+    yield call(OrderApi.createOrder, params);
+    yield put(orderActions.createOrderSuccess());
+    yield put(layoutActions.endLayoutLoading());
+    action.payload?.onNext()
+    yield put(
+      alertActions.showAlert({
+        text: "Tạo đơn hàng thành công",
+        type: "success",
+      })
+    );
+  } catch (error) {
+    yield put(layoutActions.endLayoutLoading());
+    yield put(orderActions.createOrderFailed());
+    yield put(
+      alertActions.showAlert({
+        text: "Tạo đơn hàng thất bại",
+        type: "error",
+      })
+    );
+  }
+}
+
 function* watchOrderFlow() {
   yield all([
     takeLatest(orderActions.getListOrders.type, handleGetListOrders),
     takeLatest(orderActions.getOrderDetail.type, handleGetDetailOrder),
     takeLatest(orderActions.deleteOrder.type, handleDeleteOrder),
+    takeLatest(orderActions.createOrder.type, handleCreateOrder),
   ]);
 }
 

@@ -101,7 +101,7 @@ export interface Metadata {
   value: string;
 }
 export interface Product {
-  id: number;
+  _id: string;
   name: string;
   product_id: number;
   variation_id: number;
@@ -114,11 +114,11 @@ export interface Product {
   taxes: number;
   meta_data: number;
   sku: string;
-  price: number;
-  image: {
+  price: string;
+  images: {
     id: string;
     src: string;
-  };
+  }[];
   parent_name: any;
 }
 export interface ShippingLine {

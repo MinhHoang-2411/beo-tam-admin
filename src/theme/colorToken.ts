@@ -14,7 +14,7 @@ export const colorToken = (mode: "light" | "dark") => {
           primary: "#52A186",
           error: "#CA0000",
           info: "#ECA800",
-          success: "#D2FFE4",
+          success: "#3f6b98",
         },
       }
     : {
