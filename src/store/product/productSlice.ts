@@ -8,6 +8,7 @@ interface orderState {
   productDetail: null | Product;
   loadingGetDetailProduct: boolean;
   pagination: null | Pagination;
+  temporarylistImgUrl: any[];
 }
 
 const initialState: orderState = {
@@ -16,6 +17,7 @@ const initialState: orderState = {
   productDetail: null,
   loadingGetDetailProduct: false,
   pagination: null,
+  temporarylistImgUrl: [],
 };
 
 const product = createSlice({
@@ -47,6 +49,24 @@ const product = createSlice({
     },
     resetProductDetail(state) {
       state.productDetail = null;
+    },
+
+    settemporarylistImgUrl(state, action) {
+      state.temporarylistImgUrl = action.payload;
+    },
+    plusTemporaryListImgUrl(state, action) {
+      state.temporarylistImgUrl = [
+        ...state.temporarylistImgUrl,
+        ...action.payload,
+      ];
+    },
+    deleteATemporaryImgUrl(state, action) {
+      state.temporarylistImgUrl = [...state.temporarylistImgUrl].filter(
+        (item) => item.preview !== action.payload.preview
+      );
+    },
+    resetTemporarylistImgUrl(state) {
+      state.temporarylistImgUrl = [];
     },
   },
 });

@@ -14,9 +14,13 @@ import SearchIcon from "@mui/icons-material/Search";
 import { debounceSearch } from "../../utils/debounceSearch";
 import { orderActions } from "../../store/order/orderSlice";
 import { totalPagePagination } from "../../utils/pagination";
+import CustomButton from "../../components/share/CustomButton";
+import AddIcon from "@mui/icons-material/Add";
+import { useNavigate } from "react-router-dom";
 
 const MemberPage = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const pagination = useAppSelector((state) => state.order.pagination);
   const [searchOrder, setSearchOrder] = useState("");
   const [params, setParams] = useState<{
@@ -61,62 +65,67 @@ const MemberPage = () => {
           padding: "12px 12px 0 12px",
         }}
         direction="row"
-        spacing={2}
+        justifyContent="space-between"
         alignItems="center"
       >
-        <TextField
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          sx={{ width: "350px" }}
-          placeholder="Tìm kiếm đơn hàng"
-          // size="small"
-          value={searchOrder}
-          onChange={(e) => handleSearchProduct(e.target.value)}
-        />
-        <TextField
-          sx={{ minWidth: "150px" }}
-          // size="small"
-          variant="outlined"
-          select
-          id="product-status"
-          label="Trạng thái"
-          value={orderStatusLabel}
-          InputLabelProps={{ shrink: !!orderStatusLabel }}
-          onChange={(e: any) => {
-            if (e.target.value) {
-              setParams((prevState) => ({
-                ...prevState,
-                status: e.target.value,
-                page: 1,
-              }));
-            } else {
-              setParams((prevState) => ({
-                page_size: prevState.page_size,
-                search: prevState.search,
-                page: 1,
-              }));
-            }
-            setProductStatus(e.target.value);
-          }}
-        >
-          {listStatus.map((status) => (
-            <MenuItem key={status.value} value={status.value}>
-              {status.label}
-            </MenuItem>
-          ))}
-        </TextField>
-        {/* <CustomButton
+        <Stack direction="row" spacing={2} alignItems="center">
+          <TextField
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ width: "350px" }}
+            placeholder="Tìm kiếm đơn hàng"
+            // size="small"
+            value={searchOrder}
+            onChange={(e) => handleSearchProduct(e.target.value)}
+          />
+          <TextField
+            sx={{ minWidth: "150px" }}
+            // size="small"
+            variant="outlined"
+            select
+            id="product-status"
+            label="Trạng thái"
+            value={orderStatusLabel}
+            InputLabelProps={{ shrink: !!orderStatusLabel }}
+            onChange={(e: any) => {
+              if (e.target.value) {
+                setParams((prevState) => ({
+                  ...prevState,
+                  status: e.target.value,
+                  page: 1,
+                }));
+              } else {
+                setParams((prevState) => ({
+                  page_size: prevState.page_size,
+                  search: prevState.search,
+                  page: 1,
+                }));
+              }
+              setProductStatus(e.target.value);
+            }}
+          >
+            {listStatus.map((status) => (
+              <MenuItem key={status.value} value={status.value}>
+                {status.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Stack>
+        <CustomButton
           Icon={<AddIcon />}
           color="primary"
-          onClick={openAddMemberModal}
-          label="Thêm thành viên"
-        /> */}
+          onClick={() => {
+            navigate("/orders/create");
+          }}
+          label="Thêm đơn hàng"
+        />
       </Stack>
+
       <Stack sx={{ minHeight: "85vh" }} justifyContent="space-between">
         <OrdersTable />
         {/* {listProducts?.length ? ( */}

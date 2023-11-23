@@ -109,11 +109,7 @@ const ProductDetail = () => {
       <Grid item xs={12} sx={{ mt: 2 }}>
         <Box sx={{ width: "100%" }}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <Tabs
-              value={valueTab}
-              onChange={handleChangeValueTab}
-              aria-label="basic tabs example"
-            >
+            <Tabs value={valueTab} onChange={handleChangeValueTab}>
               <Tab
                 sx={{ fontWeight: 800, fontSize: "14px" }}
                 label="Mô tả"

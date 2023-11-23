@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { userActions } from "../../store/user/userSlice";
 import { useParams } from "react-router-dom";
@@ -62,10 +62,10 @@ const CustomerDetail = () => {
     (state) => state.user.loadingCRUDCustomer
   );
   const [typePage, setTypePage] = useState<"read" | "edit">("read");
-  const genderLabels:any = {
-    male: 'Nam',
-    female: 'Nữ',
-    other: 'khác'
+  const genderLabels: any = {
+    male: "Nam",
+    female: "Nữ",
+    other: "khác",
   };
   const {
     register,
@@ -119,17 +119,17 @@ const CustomerDetail = () => {
     ),
   });
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
-    let payload:any = {
+    let payload: any = {
       user_id: detailCustomer?._id,
       first_name: data.first_name,
       last_name: data.last_name,
       billing: data.billing,
       shipping: data.shipping,
       birthday: data.birthday,
-      gender : data.gender
+      gender: data.gender,
     };
     if (data.password) {
-      payload = { ...payload, password:data.password}
+      payload = { ...payload, password: data.password };
     }
     dispatch(
       userActions.updateCustomer({
@@ -149,10 +149,9 @@ const CustomerDetail = () => {
       setValue("last_name", detailCustomer.last_name);
       setValue("email", detailCustomer.email);
       setValue("billing", detailCustomer.billing);
-      setValue("shipping", detailCustomer.shipping)
-      setValue("gender", detailCustomer.gender)
-      setValue("birthday", detailCustomer.birthday)
-
+      setValue("shipping", detailCustomer.shipping);
+      setValue("gender", detailCustomer.gender);
+      setValue("birthday", detailCustomer.birthday);
     }
   }, [detailCustomer]);
 
@@ -209,7 +208,9 @@ const CustomerDetail = () => {
                   <Grid item xs={6}>
                     <Typography variant="h5">
                       <b>Giới tính: </b>
-                      {(detailCustomer?.gender) ? genderLabels[(detailCustomer?.gender)] : 'khác'}
+                      {detailCustomer?.gender
+                        ? genderLabels[detailCustomer?.gender]
+                        : "khác"}
                     </Typography>
                   </Grid>
                   <Grid item xs={6}>
@@ -430,29 +431,36 @@ const CustomerDetail = () => {
                   required
                   helperText={errors.email?.message}
                 />
-                <FormControl  sx={{ width: "60%" }}>
-                  <InputLabel id="demo-simple-select-label">Giới tính</InputLabel>
+                <FormControl sx={{ width: "60%" }}>
+                  <InputLabel id="demo-simple-select-label">
+                    Giới tính
+                  </InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
                     id="gender"
                     label="Giới tính"
                     value={detailCustomer?.gender}
                     required
-                    onChange={e => {setValue("gender", e.target.value as string) }}
+                    onChange={(e) => {
+                      setValue("gender", e.target.value as string);
+                    }}
                   >
-                    <MenuItem value={'male'}>Nam</MenuItem>
-                    <MenuItem value={'female'}>Nữ</MenuItem>
-                    <MenuItem value={'other'}>Khác</MenuItem>
+                    <MenuItem value={"male"}>Nam</MenuItem>
+                    <MenuItem value={"female"}>Nữ</MenuItem>
+                    <MenuItem value={"other"}>Khác</MenuItem>
                   </Select>
-                    </FormControl>                    
+                </FormControl>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      sx={{ width: "60%" }}
-                      label="Ngày sinh"
-                      format="DD/MM/YYYY"
-                      value={dayjs(detailCustomer?.birthday, "DD/MM/YYYY")}
-                      onChange={(newDate:any) => {setValue("birthday", dayjs(newDate).format("DD/MM/YYYY"))}}
-                    />
+                  <DatePicker
+                    sx={{ width: "60%" }}
+                    label="Ngày sinh"
+                    format="DD/MM/YYYY"
+                    value={dayjs(detailCustomer?.birthday, "DD/MM/YYYY")}
+                    onChange={(newDate: any) => {
+                      console.log(dayjs(newDate).format("DD/MM/YYYY"));
+                      setValue("birthday", dayjs(newDate).format("DD/MM/YYYY"));
+                    }}
+                  />
                 </LocalizationProvider>
                 <TextField
                   sx={{ width: "60%" }}
