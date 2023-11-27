@@ -103,6 +103,7 @@ export interface Metadata {
 export interface Product {
   _id: string;
   name: string;
+  woo_product_id: number;
   product_id: number;
   variation_id: number;
   quantity: number;

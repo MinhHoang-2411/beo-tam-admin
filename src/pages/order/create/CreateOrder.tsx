@@ -73,7 +73,6 @@ interface FieldValues {
     product_id: number;
     quantity: number;
     price: any;
-    variation_id?: number;
   }[];
   shipping_lines?: {
     method_id: string;
@@ -320,12 +319,11 @@ const CreateOrder = () => {
       billing: payloadForm.billing,
       shipping: payloadForm.shipping,
       line_items: listProduct.map((prod, index) => ({
-        product_id: prod._id,
+        product_id: prod.woo_product_id,
         quantity: payloadForm.line_items
           ? payloadForm.line_items[index].quantity
           : 1,
         price: prod.price,
-        variation_id: prod.variation_id ? prod.variation_id : "",
       })),
       shipping_lines: shippingLines,
       fee_lines: feeLines,
