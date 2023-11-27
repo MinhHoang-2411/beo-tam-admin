@@ -90,11 +90,11 @@ const OrderDetail = () => {
             }}
           >
             <Stack direction="row" alignItems="center" spacing={1}>
-              <img
-                src={row.image.src}
-                alt={row.image.id}
+              {/* <img
+                src={row?.image.src}
+                alt={row?.image.id}
                 style={{ width: "70px" }}
-              />
+              /> */}
               <Stack>
                 <p>{row.name}</p>
                 <p>Mã: {row.sku}</p>
