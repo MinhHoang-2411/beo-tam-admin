@@ -19,10 +19,14 @@ const OrderApi = {
     const url = `${URL_API_APP}order/${id}`;
     return axiosClient.delete(url);
   },
-  createOrder(params:any) {
-    const url =`${URL_API_APP}order`
-    return axiosClient.post(url,params)
-  }
+  createOrder(params: any) {
+    const url = `${URL_API_APP}order`;
+    return axiosClient.post(url, params);
+  },
+  editOrder(params: any, id: any) {
+    const url = `${URL_API_APP}order/${id}`;
+    return axiosClient.put(url, params);
+  },
 };
 
 export default OrderApi;

@@ -92,7 +92,7 @@ function* handleCreateOrder(action: Action) {
     yield call(OrderApi.createOrder, params);
     yield put(orderActions.createOrderSuccess());
     yield put(layoutActions.endLayoutLoading());
-    action.payload?.onNext()
+    action.payload?.onNext();
     yield put(
       alertActions.showAlert({
         text: "Tạo đơn hàng thành công",
@@ -111,12 +111,41 @@ function* handleCreateOrder(action: Action) {
   }
 }
 
+function* handleEditOrder(action: Action) {
+  try {
+    const params = action.payload.data;
+    const id = action.payload.id;
+    yield put(layoutActions.startLayoutLoading());
+    yield call(OrderApi.editOrder, params, id);
+    yield put(orderActions.editOrderSuccess());
+    yield put(orderActions.getOrderDetail(id));
+    yield put(layoutActions.endLayoutLoading());
+    action.payload?.onNext();
+    yield put(
+      alertActions.showAlert({
+        text: "Chỉnh sửa đơn hàng thành công",
+        type: "success",
+      })
+    );
+  } catch (error) {
+    yield put(layoutActions.endLayoutLoading());
+    yield put(orderActions.editOrderFailed());
+    yield put(
+      alertActions.showAlert({
+        text: "Chỉnh sửa hàng thất bại",
+        type: "error",
+      })
+    );
+  }
+}
+
 function* watchOrderFlow() {
   yield all([
     takeLatest(orderActions.getListOrders.type, handleGetListOrders),
     takeLatest(orderActions.getOrderDetail.type, handleGetDetailOrder),
     takeLatest(orderActions.deleteOrder.type, handleDeleteOrder),
     takeLatest(orderActions.createOrder.type, handleCreateOrder),
+    takeLatest(orderActions.editOrder.type, handleEditOrder),
   ]);
 }
 

@@ -23,7 +23,7 @@ import {
 import CancelIcon from "@mui/icons-material/Cancel";
 import SendIcon from "@mui/icons-material/Send";
 import { ParamsModalConfirm } from "../../../types/modal";
-import { Product } from "../../../types/order";
+import { ItemLine, Product } from "../../../types/order";
 import { modalActions } from "../../../store/modal/modalSlice";
 import { HeadCell } from "../../../types/table";
 import React from "react";
@@ -36,6 +36,7 @@ import noImage from "../../../assets/emptyData/no-picture.png";
 import { userActions } from "../../../store/user/userSlice";
 import { DetailCustomer } from "../../../types/user";
 import { orderActions } from "../../../store/order/orderSlice";
+import { set } from "lodash";
 
 interface FieldValues {
   woo_customer_id: number;
@@ -80,11 +81,15 @@ interface FieldValues {
   }[];
 }
 
-const CreateOrder = () => {
+const EditOrder = ({ closeEdit }: { closeEdit: () => void }) => {
   const dispatch = useAppDispatch();
+  const orderDetail = useAppSelector((state) => state.order.OrderDetail);
   const loadingGetListProducts = useAppSelector(
     (state) => state.product.loadingGetListProducts
   );
+  const [customerInputValue, setCustomerInputValue] = useState<string>("");
+  const [allowChangeCustomerInput, setAllowChangeCustomerInput] =
+    useState<boolean>(false);
   const [listPaymentMethod] = useState([
     {
       label: "Chuyển khoản ngân hàng",
@@ -302,6 +307,7 @@ const CreateOrder = () => {
   const onSubmit: SubmitHandler<FieldValues> = (payloadForm) => {
     console.log({ payloadForm });
     const data = {
+      woo_order_id: orderDetail?.woo_order_id,
       woo_customer_id: payloadForm.woo_customer_id,
       payment_method: JSON.parse(payloadForm.payment_method).paymentMethod,
       payment_method_title: JSON.parse(payloadForm.payment_method)
@@ -311,22 +317,25 @@ const CreateOrder = () => {
         Number(customFee) +
         Number(prodsPrice)
       ).toString(),
-      billing: payloadForm.billing,
-      shipping: payloadForm.shipping,
-      line_items: listProduct.map((prod, index) => ({
-        product_id: prod.woo_product_id,
-        quantity: payloadForm.line_items
-          ? payloadForm.line_items[index].quantity
-          : 1,
-        price: prod.price,
-        name: prod.name,
-        subtotal: "",
-        sku: prod.sku,
-        image: { id: prod.images[0].id, src: prod.images[0].src },
-      })),
-      shipping_lines: shippingLines,
-      fee_lines: feeLines,
-      coupon_lines: [],
+      detail: {
+        billing: payloadForm.billing,
+        shipping: payloadForm.shipping,
+        line_items: listProduct.map((prod, index) => ({
+          product_id: prod.woo_product_id,
+          quantity: payloadForm.line_items
+            ? payloadForm.line_items[index].quantity
+            : 1,
+          price: prod.price,
+          name: prod.name,
+          subtotal: "",
+          sku: prod.sku,
+          image: { id: prod.images[0].id, src: prod.images[0].src },
+        })),
+        shipping_lines: shippingLines,
+        fee_lines: feeLines,
+        coupon_lines: [],
+        meta_data: [],
+      },
     };
     console.log({ data });
     const payload = {
@@ -338,9 +347,11 @@ const CreateOrder = () => {
         setShippingLines([]);
         setPaymentMethodLabel("");
         setCustomerInput(null);
+        closeEdit();
       },
+      id: orderDetail?._id,
     };
-    dispatch(orderActions.createOrder(payload));
+    dispatch(orderActions.editOrder(payload));
   };
 
   const {
@@ -695,11 +706,122 @@ const CreateOrder = () => {
     dispatch(userActions.getListCustomer());
   }, []);
 
+  useEffect(() => {
+    console.log({ orderDetail });
+    setValue(
+      "woo_customer_id",
+      orderDetail?.woo_customer_id ? Number(orderDetail.woo_customer_id) : NaN
+    );
+    setCustomerInputValue(
+      `${orderDetail?.customer.first_name as string} ${
+        orderDetail?.customer.last_name as string
+      }(${orderDetail?.customer.email})`
+    );
+    setPaymentMethodLabel(
+      orderDetail?.payment_method_title
+        ? JSON.stringify(
+            listPaymentMethod.find(
+              (value) => value.label === orderDetail.payment_method_title
+            )?.value
+          )
+        : ""
+    );
+    setValue(
+      "payment_method",
+      orderDetail?.payment_method_title
+        ? JSON.stringify(
+            listPaymentMethod.find(
+              (value) => value.label === orderDetail.payment_method_title
+            )?.value
+          )
+        : ""
+    );
+    setValue(
+      "billing.address_1",
+      orderDetail?.detail.billing.address_1 as string
+    );
+    setValue(
+      "billing.address_2",
+      orderDetail?.detail.billing.address_2 as string
+    );
+    setValue(
+      "billing.first_name",
+      orderDetail?.detail.billing.first_name as string
+    );
+    setValue(
+      "billing.last_name",
+      orderDetail?.detail.billing.last_name as string
+    );
+    setValue("billing.city", orderDetail?.detail.billing.city as string);
+    setValue("billing.state", orderDetail?.detail.billing.state as string);
+    setValue(
+      "billing.postcode",
+      orderDetail?.detail.billing.postcode as string
+    );
+    setValue("billing.country", orderDetail?.detail.billing.country as string);
+    setValue("billing.email", orderDetail?.detail.billing.email as string);
+    setValue("billing.phone", orderDetail?.detail.billing.phone as string);
+    setValue(
+      "shipping.first_name",
+      orderDetail?.detail.shipping.first_name as string
+    );
+    setValue(
+      "shipping.last_name",
+      orderDetail?.detail.shipping.last_name as string
+    );
+    setValue(
+      "shipping.address_1",
+      orderDetail?.detail.shipping.address_1 as string
+    );
+    setValue(
+      "shipping.address_2",
+      orderDetail?.detail.shipping.address_2 as string
+    );
+    setValue("shipping.city", orderDetail?.detail.shipping.city as string);
+    setValue("shipping.state", orderDetail?.detail.shipping.state as string);
+    setValue(
+      "shipping.postcode",
+      orderDetail?.detail.shipping.postcode as string
+    );
+    setValue(
+      "shipping.country",
+      orderDetail?.detail.shipping.country as string
+    );
+    setListProducts(
+      orderDetail?.detail.line_items.map((cv) => ({
+        ...cv,
+        images: [cv.image],
+        _id: cv.id,
+        woo_product_id: cv.id,
+      })) as Product[]
+    );
+    orderDetail?.detail.line_items.forEach((cv, i) => {
+      setValue(`line_items.${i}.quantity`, cv.quantity);
+    });
+    setShippingLines(
+      orderDetail?.detail.shipping_lines as {
+        method_id: string;
+        method_title: string;
+        total: string;
+      }[]
+    );
+    setFeeLines(
+      orderDetail?.detail.fee_lines as {
+        name: string;
+        total: string;
+      }[]
+    );
+  }, [orderDetail]);
+
   return (
-    <Box p={2}>
-      <Typography variant="h2" sx={{ fontWeight: 700 }}>
-        Tạo đơn hàng
-      </Typography>
+    <Box>
+      <Stack direction="row" justifyContent="space-between">
+        <Typography variant="h2" sx={{ fontWeight: 700 }}>
+          Chỉnh sửa đơn hàng
+        </Typography>
+        <CustomButton color="error" label="Hủy" onClick={closeEdit} />
+      </Stack>
+
       <Stack
         direction="row"
         sx={{ p: 2, border: "1px solid #ccc", borderRadius: 1, mt: 2 }}
@@ -708,6 +830,18 @@ const CreateOrder = () => {
         <Stack flex={1} spacing={1}>
           <Typography variant="h4"> Thông tin chung</Typography>
           <Autocomplete
+            onFocus={() => {
+              setAllowChangeCustomerInput(true);
+            }}
+            inputValue={customerInputValue}
+            onInputChange={(e, newValue) => {
+              if (allowChangeCustomerInput) {
+                setCustomerInputValue(newValue);
+                console.log("wtf???");
+              } else {
+                console.log("đéo");
+              }
+            }}
             disablePortal
             id="combo-box-demo"
             options={
@@ -1162,7 +1296,7 @@ const CreateOrder = () => {
       <Stack direction="row" sx={{ mt: 3, justifyContent: "flex-end" }}>
         <CustomButton
           color="primary"
-          label="Tạo đơn hàng"
+          label="Chỉnh sửa đơn hàng"
           Icon={<SendIcon />}
           onClick={() => {
             console.log("clicked");
@@ -1174,4 +1308,4 @@ const CreateOrder = () => {
   );
 };
 
-export default CreateOrder;
+export default EditOrder;
