@@ -66,15 +66,25 @@ const order = createSlice({
       state.OrderDetail = null;
     },
 
-    createOrder(state,action){
-      state.loadingCRUDOrder = true
+    createOrder(state, action) {
+      state.loadingCRUDOrder = true;
     },
-    createOrderSuccess(state){
-      state.loadingCRUDOrder = false
+    createOrderSuccess(state) {
+      state.loadingCRUDOrder = false;
     },
-    createOrderFailed(state){
-      state.loadingCRUDOrder = false
-    }
+    createOrderFailed(state) {
+      state.loadingCRUDOrder = false;
+    },
+
+    editOrder(state, action) {
+      state.loadingCRUDOrder = true;
+    },
+    editOrderSuccess(state) {
+      state.loadingCRUDOrder = false;
+    },
+    editOrderFailed(state) {
+      state.loadingCRUDOrder = false;
+    },
   },
 });
 

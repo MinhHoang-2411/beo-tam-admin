@@ -140,3 +140,31 @@ export interface ShippingLine {
     }
   ];
 }
+
+export interface ItemLine {
+  id: number;
+  name: string;
+  product_id: number;
+  variation_id: number;
+  quantity: number;
+  tax_class: string;
+  subtotal: string;
+  subtotal_tax: string;
+  total: string;
+  total_tax: string;
+  taxes: any[];
+  meta_data: any[];
+  sku: string;
+  price: number;
+  image: {
+    id: string;
+    src: string;
+  };
+  parent_name: any;
+}
+
+export interface FeeLine {
+  method_id: string;
+  name: string;
+  total: string;
+}
