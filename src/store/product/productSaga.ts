@@ -3,6 +3,7 @@ import { Action } from "../../types/actions";
 import { productActions } from "./productSlice";
 import { alertActions } from "../alert/alertSlice";
 import ProductApi from "../../api/product";
+import { layoutActions } from "../layout/layoutSlice";
 
 function* handleGetListProducts(action: Action) {
   try {
@@ -37,6 +38,30 @@ function* handleGetListProducts(action: Action) {
   }
 }
 
+function* handleGetListCategories(action: Action) {
+  try {
+    let params;
+    if (action.payload.page_size) {
+      params = action.payload;
+    } else {
+      params = { page: 1, page_size: 20 };
+    }
+    const response: { data: any } = yield call(
+      ProductApi.getListCategories,
+      params
+    );
+    yield put(productActions.getListCategorySuccess(response.data.data.items));
+  } catch (error) {
+    yield put(productActions.getListCategoryFailed());
+    yield put(
+      alertActions.showAlert({
+        text: "Không thể lấy danh sách danh mục",
+        type: "error",
+      })
+    );
+  }
+}
+
 function* handleGetProductDetail(action: Action) {
   try {
     const response: { data: any; headers: any } = yield call(
@@ -55,10 +80,57 @@ function* handleGetProductDetail(action: Action) {
   }
 }
 
+function* handleCreateProduct(action: Action) {
+  try {
+    yield put(layoutActions.startLayoutLoading());
+    const formdata: any = new FormData();
+    action.payload.formData.forEach((file: File) =>
+      formdata.append("files", file)
+    );
+    console.log({ formdata });
+    if (action.payload.formData.length) {
+      const listImagesUrl: { data: any } = yield call(
+        ProductApi.uploadImages,
+        formdata
+      );
+      console.log({ listImagesUrl });
+      const response: { data: any } = yield call(ProductApi.createProduct, {
+        ...action.payload.params,
+        images: listImagesUrl.data.data,
+      });
+    } else {
+      const response: { data: any } = yield call(ProductApi.createProduct, {
+        ...action.payload.params,
+        images: [],
+      });
+    }
+    action.payload?.onNext();
+    yield put(productActions.resetTemporarylistImgUrl());
+    yield put(layoutActions.endLayoutLoading());
+    yield put(
+      alertActions.showAlert({
+        text: "Tạo sản phẩm thành công",
+        type: "success",
+      })
+    );
+  } catch (error) {
+    yield put(layoutActions.endLayoutLoading());
+    yield put(productActions.createProductFailed());
+    yield put(
+      alertActions.showAlert({
+        text: "Tạo sản phẩm thất bại",
+        type: "error",
+      })
+    );
+  }
+}
+
 function* watchProductFlow() {
   yield all([
     takeLatest(productActions.getListProducts.type, handleGetListProducts),
     takeLatest(productActions.getProductDetail.type, handleGetProductDetail),
+    takeLatest(productActions.createProduct.type, handleCreateProduct),
+    takeLatest(productActions.getListCategory.type, handleGetListCategories),
   ]);
 }
 

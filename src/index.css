@@ -24,6 +24,10 @@ body,
   text-align: center !important;
 }
 
+.ql-toolbar.ql-snow + .ql-container.ql-snow {
+  min-height: 300px !important;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }

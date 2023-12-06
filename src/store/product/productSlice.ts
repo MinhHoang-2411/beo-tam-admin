@@ -1,23 +1,33 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { Pagination } from "../../types/pagination";
-import { Product } from "../../types/product";
+import { Category, Product } from "../../types/product";
 
 interface orderState {
   listProducts: Product[] | null;
   loadingGetListProducts: boolean;
+  listCategory: Category[];
+  loadingGetListCategory: boolean;
   productDetail: null | Product;
   loadingGetDetailProduct: boolean;
   pagination: null | Pagination;
   temporarylistImgUrl: any[];
+  listImgUrls: any[];
+  isUploadImgs: boolean;
+  loadingCreateProduct: boolean;
 }
 
 const initialState: orderState = {
   listProducts: null,
+  listCategory: [],
   loadingGetListProducts: false,
+  loadingGetListCategory: false,
   productDetail: null,
   loadingGetDetailProduct: false,
   pagination: null,
   temporarylistImgUrl: [],
+  listImgUrls: [],
+  isUploadImgs: false,
+  loadingCreateProduct: false,
 };
 
 const product = createSlice({
@@ -51,6 +61,27 @@ const product = createSlice({
       state.productDetail = null;
     },
 
+    getListCategory(state, action) {
+      state.loadingGetListCategory = true;
+    },
+    getListCategorySuccess(state, action) {
+      state.loadingGetListCategory = false;
+      state.listCategory = action.payload;
+    },
+    getListCategoryFailed(state) {
+      state.loadingGetListCategory = false;
+    },
+
+    createProduct(state, action) {
+      state.loadingCreateProduct = true;
+    },
+    createProductSuccess(state) {
+      state.loadingCreateProduct = false;
+    },
+    createProductFailed(state) {
+      state.loadingCreateProduct = false;
+    },
+
     settemporarylistImgUrl(state, action) {
       state.temporarylistImgUrl = action.payload;
     },
@@ -67,6 +98,17 @@ const product = createSlice({
     },
     resetTemporarylistImgUrl(state) {
       state.temporarylistImgUrl = [];
+    },
+
+    uploadImages(state, action) {
+      state.isUploadImgs = true;
+    },
+    uploadImagesSuccess(state, action) {
+      state.isUploadImgs = false;
+      state.listImgUrls = action.payload;
+    },
+    uploadImagesFailed(state) {
+      state.isUploadImgs = false;
     },
   },
 });

@@ -140,6 +140,14 @@ export default function OrdersTable() {
       fontSize: "15px",
     },
     {
+      id: "is-sync",
+      align: "center",
+      disablePadding: false,
+      label: "Đồng bộ",
+      fontSize: "15px",
+    },
+
+    {
       id: "action",
       align: "center",
       disablePadding: false,
@@ -257,6 +265,30 @@ export default function OrdersTable() {
               payment={row.payment_method}
               paymentTitle={row.payment_method_title}
             />
+          </TableCell>
+          <TableCell
+            align="left"
+            className="table-cell"
+            sx={{
+              minWidth: 150,
+              maxWidth: 150,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            <Box
+              sx={{
+                p: 1,
+                bgcolor: row.is_sync ? "#06a809" : "#8b8b8b",
+                color: "#fff",
+                borderRadius: "4px",
+                textAlign: "center",
+                minWidth: "100px",
+                maxWidth: "160px",
+              }}
+            >
+              {row.is_sync ? "Đã đồng bộ" : "Chưa đồng bộ"}
+            </Box>
           </TableCell>
           <TableCell align="left" className="table-cell">
             <Box>
