@@ -23,6 +23,7 @@ import { convertNumberFormat } from "../../../utils/numberFormat";
 import CustomButton from "../../../components/share/CustomButton";
 import EditIcon from "@mui/icons-material/Edit";
 import EditOrder from "../edit/EditOrder";
+
 const OrderDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -292,6 +293,14 @@ const OrderDetail = () => {
               variant="h5"
               sx={{ color: "#606060" }}
             >{`Phương thức thanh toán: ${orderDetail?.payment_method_title}`}</Typography>
+            <Typography
+              variant="h5"
+              sx={{ color: "#606060" }}
+            >{`Trạng thái đồng bộ: ${
+              orderDetail?.is_sync
+                ? "Đã đồng bộ với wordpress"
+                : "Chưa đồng bộ với wordpress"
+            }`}</Typography>
             <Grid container>
               <Grid item xs={4} sx={{ mt: 1 }}>
                 <Typography variant="h6" fontWeight={700}>

@@ -28,9 +28,28 @@ const ProductApi = {
       params,
     });
   },
+  getListCategories(query: any) {
+    const url = `${URL_API_APP}product/categories`;
+    const params = {
+      ...query,
+    };
+    return axiosClient.get(url, {
+      params,
+    });
+  },
   getDetailProduct(id: any) {
     const url = `${URL_API_APP}product/${id}`;
     return axiosClient.get(url);
+  },
+  createProduct(params: any) {
+    const url = `${URL_API_APP}product`;
+    return axiosClient.post(url, params);
+  },
+  uploadImages(formData: any) {
+    const url = "/product/images";
+    return axiosClient.post(url, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
   },
 };
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Box,
@@ -6,9 +6,12 @@ import {
   Divider,
   FormControl,
   FormControlLabel,
+  FormLabel,
   Grid,
   InputLabel,
   MenuItem,
+  Radio,
+  RadioGroup,
   Select,
   Stack,
   Tab,
@@ -16,7 +19,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import * as yup from "yup";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
@@ -26,41 +29,59 @@ import { useAppDispatch, useAppSelector } from "../../../hooks/store";
 import { productActions } from "../../../store/product/productSlice";
 import ImageUpload from "../../../components/share/ImageUpload";
 import { CustomTabPanel, a11yProps } from "../../../utils/tab";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import CustomButton from "../../../components/share/CustomButton";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 interface FieldValues {
   name: string;
   description: string;
   short_description: string;
-  keyword: string;
-  category: string;
-  general: {
-    price: string;
-    saleOffPrice: string;
-    startSaleOff: any;
-    endSaleOff: any;
-  };
-  inventoryCheck: {
-    sku: string;
-    stockManagement: boolean;
-    inventoryStatus: string;
-    limited: boolean;
-  };
-  shipping: { weight: string; length: string; width: string; height: string };
-  relatedProducts: {
-    upsells: any[];
-    cross: any[];
-  };
-  property: any;
-  variant: any;
+  regular_price: string;
+  sale_price: string;
+  date_on_sale_from: string;
+  date_on_sale_to: string;
+  sku: string;
+  manage_stock: boolean;
+  stock_quantity: number;
+  backorders: "no" | "notify" | "yes";
+  stock_status: "instock" | "outofstock" | "onbackorder";
+  sold_individually: boolean;
+  weight: string;
+  dimensions: { length: string; width: string; height: string };
+  upsell_ids: any[];
+  cross_sell_ids: any[];
+  tags: any[];
+  categories: any[];
 }
 
 const CreateProduct = () => {
+  //test
+  const toolbarOptions = [
+    [{ size: ["small", false, "large", "huge"] }],
+    ["bold", "italic", "underline", "strike"],
+    ["link", "image"],
+    ["blockquote", "code-block"],
+    [{ header: 1 }, { header: 2 }], // custom button values
+    [{ list: "ordered" }, { list: "bullet" }],
+    // [{ direction: "rtl" }], // text direction
+    [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+    [{ align: [] }],
+
+    ["clean"],
+  ];
+  const [description, setDescription] = useState("");
+  const [shortDescription, setShortDescription] = useState("");
+  const [isOpenDateSaleOff, setIsOpenDateSaleOff] = useState<boolean>(false);
+  const [checkedStockManagement, setCheckedStockManagement] =
+    useState<boolean>(false);
+  const [checkedLimited, setCheckedLimited] = useState<boolean>(false);
+
   const dispatch = useAppDispatch();
-  const [fakeListCategory] = useState([
-    { label: "Danh mục 1", value: 1 },
-    { label: "Danh mục 2", value: 2 },
-    { label: "Danh mục 3", value: 3 },
-  ]);
+  const listCategories = useAppSelector((state) => state.product.listCategory);
   const [selectedCategory, setSelectedCategory] = useState<any[]>([]);
   const [prodtype, setProdType] = useState("prod1");
   const [valueTab, setValueTab] = useState(0);
@@ -85,8 +106,22 @@ const CreateProduct = () => {
       name: "",
       description: "",
       short_description: "",
-      keyword: "",
-      category: "",
+      regular_price: "",
+      sale_price: "",
+      date_on_sale_from: "",
+      date_on_sale_to: "",
+      sku: "",
+      manage_stock: false,
+      stock_quantity: 0,
+      backorders: "no",
+      stock_status: "instock",
+      sold_individually: false,
+      weight: "",
+      dimensions: { length: "", width: "", height: "" },
+      upsell_ids: [],
+      cross_sell_ids: [],
+      tags: [],
+      categories: [],
     },
   });
 
@@ -102,31 +137,83 @@ const CreateProduct = () => {
   const deleteImageUpload = (file: any) => {
     dispatch(productActions.deleteATemporaryImgUrl(file));
   };
+
+  const onSubmit: SubmitHandler<FieldValues> = (payloadForm) => {
+    const payload: any = {
+      ...payloadForm,
+      stock_quantity: Number(payloadForm.stock_quantity),
+      description: description,
+      short_description: shortDescription,
+      categories: selectedCategory.map((cate) => {
+        return { id: cate };
+      }),
+    };
+    if (payloadForm.manage_stock) {
+      delete payload.stock_status;
+    } else {
+      delete payload.backorders;
+      delete payload.stock_quantity;
+    }
+    console.log({ payload });
+    const payloadRequest = {
+      formData: listImage,
+      params: payload,
+      onNext() {
+        reset();
+        setDescription("");
+        setShortDescription("");
+        setSelectedCategory([]);
+        setIsOpenDateSaleOff(false);
+        setCheckedLimited(false);
+        setCheckedStockManagement(false);
+        setValueTab(0);
+      },
+    };
+    dispatch(productActions.createProduct(payloadRequest));
+  };
+
+  useEffect(() => {
+    dispatch(productActions.getListCategory({}));
+  }, []);
+
   return (
     <Stack spacing={2} p={2}>
-      <Typography variant="h2" sx={{ mb: 2, fontWeight: 700 }}>
-        Tạo mới sản phẩm
-      </Typography>
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography variant="h2" sx={{ mb: 2, fontWeight: 700 }}>
+          Tạo mới sản phẩm
+        </Typography>
+        <CustomButton
+          color="primary"
+          label="Tạo sản phẩm"
+          onClick={() => {
+            handleSubmit(onSubmit)();
+          }}
+        />
+      </Stack>
+
       <TextField
         id="name"
         label="Tên sản phẩm"
         inputProps={{ ...register("name") }}
         fullWidth
-        // error={!!errors.email?.message}
-        // required
-        // helperText={errors.email?.message}
       />
-      <TextField
-        id="description"
-        label="Mô tả sản phẩm"
-        inputProps={{ ...register("description") }}
-        fullWidth
-        multiline
-        rows={12}
-        // error={!!errors.email?.message}
-        // required
-        // helperText={errors.email?.message}
-      />
+      <Stack
+        gap={1}
+        sx={{
+          border: `1px solid #ccc `,
+          p: 2,
+          borderRadius: 1,
+        }}
+      >
+        <b>Mô tả sản phẩm</b>
+        <ReactQuill
+          modules={{ toolbar: toolbarOptions }}
+          theme="snow"
+          value={description}
+          onChange={setDescription}
+        />
+      </Stack>
+
       <Stack
         gap={1}
         sx={{
@@ -215,6 +302,7 @@ const CreateProduct = () => {
                 fontWeight: 800,
                 fontSize: "12px",
                 borderBottom: "1px solid #ccc",
+                height: "70px",
               }}
               label="Chung"
               {...a11yProps(0)}
@@ -224,6 +312,7 @@ const CreateProduct = () => {
                 fontWeight: 800,
                 fontSize: "12px",
                 borderBottom: "1px solid #ccc",
+                height: "70px",
               }}
               label="Kiểm kê kho hàng"
               {...a11yProps(1)}
@@ -233,6 +322,7 @@ const CreateProduct = () => {
                 fontWeight: 800,
                 fontSize: "12px",
                 borderBottom: "1px solid #ccc",
+                height: "70px",
               }}
               label="Giao hàng"
               {...a11yProps(2)}
@@ -241,12 +331,12 @@ const CreateProduct = () => {
               sx={{
                 fontWeight: 800,
                 fontSize: "12px",
-                borderBottom: "1px solid #ccc",
+                height: "70px",
               }}
               label="Các sản phẩm được liên kết"
               {...a11yProps(3)}
             />
-            <Tab
+            {/* <Tab
               sx={{
                 fontWeight: 800,
                 fontSize: "12px",
@@ -259,82 +349,280 @@ const CreateProduct = () => {
               sx={{ fontWeight: 800, fontSize: "12px" }}
               label="Các biến thể"
               {...a11yProps(5)}
-            />
+            /> */}
           </Tabs>
           <CustomTabPanel value={valueTab} index={0}>
             <Stack spacing={1}>
               <TextField
                 id="generalPrice"
                 label="Giá sản phẩm"
-                inputProps={{ ...register("general.price") }}
+                inputProps={{ ...register("regular_price") }}
                 sx={{ width: "400px" }}
                 size="small"
+                type="number"
               />
               <TextField
                 id="generalPrice"
                 label="Giá khuyến mãi"
-                inputProps={{ ...register("general.saleOffPrice") }}
+                inputProps={{ ...register("sale_price") }}
                 sx={{ width: "400px" }}
                 size="small"
+                type="number"
               />
+              {isOpenDateSaleOff ? (
+                <>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      label="Ngày bắt đầu"
+                      format="DD/MM/YYYY"
+                      onChange={(newDate: any) => {
+                        console.log(dayjs(newDate).format("DD/MM/YYYY"));
+                        setValue(
+                          "date_on_sale_from",
+                          dayjs(newDate).format("DD/MM/YYYY")
+                        );
+                      }}
+                      slotProps={{ textField: { size: "small" } }}
+                    />
+                    <DatePicker
+                      label="Ngày kết thúc"
+                      format="DD/MM/YYYY"
+                      onChange={(newDate: any) => {
+                        console.log(dayjs(newDate).format("DD/MM/YYYY"));
+                        setValue(
+                          "date_on_sale_to",
+                          dayjs(newDate).format("DD/MM/YYYY")
+                        );
+                      }}
+                      slotProps={{ textField: { size: "small" } }}
+                    />
+                  </LocalizationProvider>
+                  <CustomButton
+                    color="error"
+                    label="Hủy"
+                    width="100px"
+                    onClick={() => setIsOpenDateSaleOff(false)}
+                  />
+                </>
+              ) : (
+                <CustomButton
+                  label="Lên lịch"
+                  color="info"
+                  width="100px"
+                  onClick={() => setIsOpenDateSaleOff(true)}
+                />
+              )}
             </Stack>
           </CustomTabPanel>
           <CustomTabPanel value={valueTab} index={1}>
-            1
+            <Stack spacing={1}>
+              <TextField
+                id="sku"
+                label="Mã sản phẩm"
+                inputProps={{ ...register("sku") }}
+                sx={{ width: "400px" }}
+                size="small"
+              />
+              <FormControlLabel
+                label="Theo dõi số lượng tồn kho cho sản phẩm này"
+                control={
+                  <Checkbox
+                    checked={checkedStockManagement}
+                    onChange={(e) => {
+                      setCheckedStockManagement(e.target.checked);
+                      setValue("manage_stock", e.target.checked);
+                    }}
+                    inputProps={{ "aria-label": "controlled" }}
+                  />
+                }
+              />
+              {checkedStockManagement ? (
+                <>
+                  <TextField
+                    id="stock_quantity"
+                    label="số lượng"
+                    inputProps={{ ...register("stock_quantity") }}
+                    sx={{ width: "400px" }}
+                    size="small"
+                    type="number"
+                  />
+                  <FormControl sx={{ px: 1 }}>
+                    <FormLabel id="demo-radio-buttons-group-label">
+                      Cho phép đặt hàng trước?
+                    </FormLabel>
+                    <RadioGroup
+                      aria-labelledby="demo-radio-buttons-group-label"
+                      defaultValue="no"
+                      name="radio-buttons-group"
+                      onChange={(e) =>
+                        setValue(
+                          "backorders",
+                          e.target.value as "no" | "notify" | "yes"
+                        )
+                      }
+                    >
+                      <FormControlLabel
+                        value="no"
+                        control={<Radio />}
+                        label="Không cho phép"
+                      />
+                      <FormControlLabel
+                        value="notify"
+                        control={<Radio />}
+                        label="Cho phép, nhưng phải thông báo cho khách hàng"
+                      />
+                      <FormControlLabel
+                        value="yes"
+                        control={<Radio />}
+                        label="Cho phép"
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                </>
+              ) : (
+                <FormControl sx={{ px: 1 }}>
+                  <FormLabel id="demo-radio-buttons-group-label">
+                    Trạng thái kho hàng
+                  </FormLabel>
+                  <RadioGroup
+                    aria-labelledby="demo-radio-buttons-group-label"
+                    defaultValue="instock"
+                    name="radio-buttons-group"
+                    onChange={(e) =>
+                      setValue(
+                        "stock_status",
+                        e.target.value as
+                          | "instock"
+                          | "outofstock"
+                          | "onbackorder"
+                      )
+                    }
+                  >
+                    <FormControlLabel
+                      value="instock"
+                      control={<Radio />}
+                      label="Còn hàng"
+                    />
+                    <FormControlLabel
+                      value="outofstock"
+                      control={<Radio />}
+                      label="Hết hàng"
+                    />
+                    <FormControlLabel
+                      value="onbackorder"
+                      control={<Radio />}
+                      label="Chờ hàng"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              )}
+
+              <FormControlLabel
+                label="Giới hạn một sản phẩm trên mỗi đơn hàng"
+                control={
+                  <Checkbox
+                    checked={checkedLimited}
+                    onChange={(e) => {
+                      setCheckedLimited(e.target.checked);
+                      setValue("sold_individually", e.target.checked);
+                    }}
+                    inputProps={{ "aria-label": "controlled" }}
+                  />
+                }
+              />
+            </Stack>
           </CustomTabPanel>
           <CustomTabPanel value={valueTab} index={2}>
-            2
+            <Stack spacing={1}>
+              <TextField
+                id="weight"
+                label="Cân nặng(g)"
+                inputProps={{ ...register("weight") }}
+                sx={{ width: "400px" }}
+                size="small"
+                type="number"
+              />
+              <Stack direction="row" spacing={1} sx={{ width: "400px" }}>
+                <TextField
+                  id="lenght"
+                  label="Dài(cm)"
+                  inputProps={{ ...register("dimensions.length") }}
+                  size="small"
+                  type="number"
+                />{" "}
+                <TextField
+                  id="weight"
+                  label="Rộng(cm)"
+                  inputProps={{ ...register("dimensions.width") }}
+                  size="small"
+                />{" "}
+                <TextField
+                  id="height"
+                  label="cao(cm)"
+                  inputProps={{ ...register("dimensions.height") }}
+                  size="small"
+                  type="number"
+                />
+              </Stack>
+            </Stack>
           </CustomTabPanel>
           <CustomTabPanel value={valueTab} index={3}>
-            3
+            We will be right back
           </CustomTabPanel>
-          <CustomTabPanel value={valueTab} index={4}>
+          {/* <CustomTabPanel value={valueTab} index={4}>
             4
           </CustomTabPanel>
           <CustomTabPanel value={valueTab} index={5}>
             5
-          </CustomTabPanel>
+          </CustomTabPanel> */}
         </Stack>
       </Stack>
       <Stack direction="row" spacing={1}>
-        <Box sx={{ flex: 2 }}>
-          <TextField
-            id="short_description"
-            label="Mô tả ngắn"
-            inputProps={{ ...register("short_description") }}
-            fullWidth
-            multiline
-            rows={8}
-            // error={!!errors.email?.message}
-            // required
-            // helperText={errors.email?.message}
+        <Stack
+          gap={1}
+          sx={{
+            border: `1px solid #ccc `,
+            p: 2,
+            borderRadius: 1,
+            overflow: "auto",
+          }}
+        >
+          <b>Mô tả ngắn</b>
+          <ReactQuill
+            modules={{ toolbar: toolbarOptions }}
+            theme="snow"
+            value={shortDescription}
+            onChange={setShortDescription}
           />
-        </Box>
+        </Stack>
         <Box sx={{ flex: 1, p: 2, border: "1px solid #ccc", borderRadius: 1 }}>
           <b>Danh mục sản phẩm</b>
-          <Stack>
-            {fakeListCategory.map((cate) => (
+          <Stack sx={{ maxHeight: "600px", overflow: "auto" }}>
+            {listCategories.map((cate) => (
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={selectedCategory.includes(cate.value)}
+                    checked={selectedCategory.includes(cate.woo_category_id)}
                     onChange={(e) => {
                       if (e.target.checked) {
                         console.log("yolo");
-                        setSelectedCategory([...selectedCategory, cate.value]);
+                        setSelectedCategory([
+                          ...selectedCategory,
+                          cate.woo_category_id,
+                        ]);
                       } else {
                         console.log("loyo");
                         setSelectedCategory(
                           selectedCategory.filter(
-                            (slcate) => slcate !== cate.value
+                            (slcate) => slcate !== cate.woo_category_id
                           )
                         );
                       }
                     }}
                   />
                 }
-                key={cate.value}
-                label={cate.label}
+                key={cate._id}
+                label={cate.name}
               />
             ))}
           </Stack>

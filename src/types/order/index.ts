@@ -33,6 +33,7 @@ export interface OrderDetail {
   woo_order_id: string;
   __v: number;
   _id: string;
+  is_sync: boolean;
 }
 
 export interface Order {
@@ -68,6 +69,7 @@ export interface Order {
   woo_order_id: string;
   __v: number;
   _id: string;
+  is_sync: boolean;
 }
 export interface Bill {
   first_name: string;

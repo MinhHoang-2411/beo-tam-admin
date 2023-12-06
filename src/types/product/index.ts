@@ -80,3 +80,9 @@ export interface ProductDetail {
   meta_data: any[];
   __v: number;
 }
+
+export interface Category {
+  _id: string;
+  woo_category_id: number;
+  name: string;
+}

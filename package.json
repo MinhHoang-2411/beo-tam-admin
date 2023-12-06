@@ -34,6 +34,7 @@
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.45.4",
     "react-pro-sidebar": "^1.1.0-alpha.1",
+    "react-quill": "^2.0.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "6.3.0",
     "react-toastify": "^9.1.2",
