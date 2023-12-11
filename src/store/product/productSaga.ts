@@ -87,13 +87,13 @@ function* handleCreateProduct(action: Action) {
     action.payload.formData.forEach((file: File) =>
       formdata.append("files", file)
     );
-    console.log({ formdata });
+    // console.log({ formdata });
     if (action.payload.formData.length) {
       const listImagesUrl: { data: any } = yield call(
         ProductApi.uploadImages,
         formdata
       );
-      console.log({ listImagesUrl });
+      // console.log({ listImagesUrl });
       const response: { data: any } = yield call(ProductApi.createProduct, {
         ...action.payload.params,
         images: listImagesUrl.data.data,
@@ -125,12 +125,31 @@ function* handleCreateProduct(action: Action) {
   }
 }
 
+function* handleDeleteListImagesWillBeDelete(action: Action) {
+  try {
+    yield call(ProductApi.deleteImages, action.payload);
+    yield put(productActions.resetListImageWillBeDeleteWhenCancel());
+  } catch (error) {
+    yield put(productActions.resetListImageWillBeDeleteWhenCancel());
+    yield put(
+      alertActions.showAlert({
+        text: "Xóa ảnh thất bại",
+        type: "error",
+      })
+    );
+  }
+}
+
 function* watchProductFlow() {
   yield all([
     takeLatest(productActions.getListProducts.type, handleGetListProducts),
     takeLatest(productActions.getProductDetail.type, handleGetProductDetail),
     takeLatest(productActions.createProduct.type, handleCreateProduct),
     takeLatest(productActions.getListCategory.type, handleGetListCategories),
+    takeLatest(
+      productActions.deleteListImageWillBeDeleteWhenCancel.type,
+      handleDeleteListImagesWillBeDelete
+    ),
   ]);
 }
 

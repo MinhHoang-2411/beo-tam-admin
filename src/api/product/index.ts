@@ -51,6 +51,10 @@ const ProductApi = {
       headers: { "Content-Type": "multipart/form-data" },
     });
   },
+  deleteImages(params: any) {
+    const url = "/product/images";
+    return axiosClient.delete(url, params);
+  },
 };
 
 export default ProductApi;
