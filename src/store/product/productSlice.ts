@@ -14,6 +14,8 @@ interface orderState {
   listImgUrls: any[];
   isUploadImgs: boolean;
   loadingCreateProduct: boolean;
+  listImageWillBeDeleteWhenCancel: any[];
+  loadingDeleteListImageWillBeDeleteWhenCancel: boolean;
 }
 
 const initialState: orderState = {
@@ -28,6 +30,8 @@ const initialState: orderState = {
   listImgUrls: [],
   isUploadImgs: false,
   loadingCreateProduct: false,
+  listImageWillBeDeleteWhenCancel: [],
+  loadingDeleteListImageWillBeDeleteWhenCancel: false,
 };
 
 const product = createSlice({
@@ -109,6 +113,19 @@ const product = createSlice({
     },
     uploadImagesFailed(state) {
       state.isUploadImgs = false;
+    },
+
+    addUrlIntoListImageWillBeDeleteWhenCancel(state, action) {
+      state.listImageWillBeDeleteWhenCancel = [
+        ...state.listImageWillBeDeleteWhenCancel,
+        action.payload,
+      ];
+    },
+    deleteListImageWillBeDeleteWhenCancel(state, action) {
+      state.loadingDeleteListImageWillBeDeleteWhenCancel = true;
+    },
+    resetListImageWillBeDeleteWhenCancel(state) {
+      state.listImageWillBeDeleteWhenCancel = [];
     },
   },
 });

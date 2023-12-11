@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Box,
@@ -35,31 +35,38 @@ import CustomButton from "../../../components/share/CustomButton";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-
+import ProductApi from "../../../api/product";
+import ErrorIcon from "@mui/icons-material/Error";
 interface FieldValues {
   name: string;
-  description: string;
-  short_description: string;
+  description?: string;
+  short_description?: string;
   regular_price: string;
-  sale_price: string;
-  date_on_sale_from: string;
-  date_on_sale_to: string;
+  sale_price?: string;
+  date_on_sale_from?: string;
+  date_on_sale_to?: string;
   sku: string;
-  manage_stock: boolean;
-  stock_quantity: number;
-  backorders: "no" | "notify" | "yes";
-  stock_status: "instock" | "outofstock" | "onbackorder";
-  sold_individually: boolean;
+  manage_stock?: boolean;
+  stock_quantity?: number;
+  backorders?: "no" | "notify" | "yes";
+  stock_status?: "instock" | "outofstock" | "onbackorder";
+  sold_individually?: boolean;
   weight: string;
   dimensions: { length: string; width: string; height: string };
-  upsell_ids: any[];
-  cross_sell_ids: any[];
-  tags: any[];
+  upsell_ids?: any[];
+  cross_sell_ids?: any[];
+  tags?: any[];
   categories: any[];
 }
 
 const CreateProduct = () => {
   //test
+  const listImageWillBeDeleteWhenCancel = useAppSelector(
+    (state) => state.product.listImageWillBeDeleteWhenCancel
+  );
+  const [activeCheckValid, setActiveCheckValid] = useState(false);
+  const quillRef = useRef<ReactQuill>(null);
+  const quillRef2 = useRef<ReactQuill>(null);
   const toolbarOptions = [
     [{ size: ["small", false, "large", "huge"] }],
     ["bold", "italic", "underline", "strike"],
@@ -73,6 +80,58 @@ const CreateProduct = () => {
 
     ["clean"],
   ];
+  const imageHandler = useCallback(() => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+    input.onchange = async () => {
+      if (input !== null && input.files !== null) {
+        const file = input.files[0];
+        const formdata: any = new FormData();
+        formdata.append("files", file);
+        const url: any = await ProductApi.uploadImages(formdata);
+        // console.log({ url: url.data.data[0] });
+        dispatch(
+          productActions.addUrlIntoListImageWillBeDeleteWhenCancel(
+            url.data.data[0]
+          )
+        );
+        const quill = quillRef.current;
+        if (quill) {
+          const range = quill.getEditorSelection();
+          range &&
+            quill
+              .getEditor()
+              .insertEmbed(range.index, "image", url.data.data[0]);
+        }
+      }
+    };
+  }, []);
+  const imageHandler2 = useCallback(() => {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+    input.onchange = async () => {
+      if (input !== null && input.files !== null) {
+        const file = input.files[0];
+        const formdata: any = new FormData();
+        formdata.append("files", file);
+        const url: any = await ProductApi.uploadImages(formdata);
+        // console.log({ url: url.data.data[0] });
+        const quill = quillRef2.current;
+        if (quill) {
+          const range = quill.getEditorSelection();
+          range &&
+            quill
+              .getEditor()
+              .insertEmbed(range.index, "image", url.data.data[0]);
+        }
+      }
+    };
+  }, []);
+
   const [description, setDescription] = useState("");
   const [shortDescription, setShortDescription] = useState("");
   const [isOpenDateSaleOff, setIsOpenDateSaleOff] = useState<boolean>(false);
@@ -123,6 +182,20 @@ const CreateProduct = () => {
       tags: [],
       categories: [],
     },
+    resolver: yupResolver(
+      yup.object().shape({
+        name: yup.string().required("Vui lòng nhập trường này"),
+        sku: yup.string().required("Vui lòng nhập trường này"),
+        regular_price: yup.string().required("Vui lòng nhập trường này"),
+        weight: yup.string().required("Vui lòng nhập trường này"),
+        dimensions: yup.object().shape({
+          length: yup.string().required("Vui lòng nhập trường này"),
+          width: yup.string().required("Vui lòng nhập trường này"),
+          height: yup.string().required("Vui lòng nhập trường này"),
+        }),
+        categories: yup.array().required("Vui lòng nhập trường này"),
+      })
+    ),
   });
 
   const uploadTemporaryImages = (listImg: any) => {
@@ -154,7 +227,7 @@ const CreateProduct = () => {
       delete payload.backorders;
       delete payload.stock_quantity;
     }
-    console.log({ payload });
+    // console.log({ payload });
     const payloadRequest = {
       formData: listImage,
       params: payload,
@@ -167,6 +240,7 @@ const CreateProduct = () => {
         setCheckedLimited(false);
         setCheckedStockManagement(false);
         setValueTab(0);
+        setActiveCheckValid(false);
       },
     };
     dispatch(productActions.createProduct(payloadRequest));
@@ -174,8 +248,20 @@ const CreateProduct = () => {
 
   useEffect(() => {
     dispatch(productActions.getListCategory({}));
-  }, []);
+  }, [dispatch]);
 
+  useEffect(() => {
+    return () => {
+      // console.log({ listImageWillBeDeleteWhenCancel });
+      if (listImageWillBeDeleteWhenCancel.length) {
+        dispatch(
+          productActions.deleteListImageWillBeDeleteWhenCancel({
+            links: listImageWillBeDeleteWhenCancel,
+          })
+        );
+      }
+    };
+  }, [dispatch, listImageWillBeDeleteWhenCancel]);
   return (
     <Stack spacing={2} p={2}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -186,6 +272,7 @@ const CreateProduct = () => {
           color="primary"
           label="Tạo sản phẩm"
           onClick={() => {
+            setActiveCheckValid(true);
             handleSubmit(onSubmit)();
           }}
         />
@@ -196,6 +283,9 @@ const CreateProduct = () => {
         label="Tên sản phẩm"
         inputProps={{ ...register("name") }}
         fullWidth
+        error={!!errors.name}
+        helperText={errors.name?.message}
+        required
       />
       <Stack
         gap={1}
@@ -207,7 +297,18 @@ const CreateProduct = () => {
       >
         <b>Mô tả sản phẩm</b>
         <ReactQuill
-          modules={{ toolbar: toolbarOptions }}
+          modules={{
+            toolbar: {
+              container: toolbarOptions,
+              handlers: {
+                image: imageHandler,
+              },
+            },
+            clipboard: {
+              matchVisual: false,
+            },
+          }}
+          ref={quillRef}
           theme="snow"
           value={description}
           onChange={setDescription}
@@ -217,12 +318,21 @@ const CreateProduct = () => {
       <Stack
         gap={1}
         sx={{
-          border: `1px solid #ccc `,
+          border:
+            !listImage.length && activeCheckValid
+              ? `1px solid #d32f2f`
+              : `1px solid #ccc`,
           p: 2,
           borderRadius: 1,
         }}
       >
-        <b>{`Thêm ảnh cho sản phẩm (Tối đa: 8)`}</b>
+        <b
+          style={
+            !listImage.length && activeCheckValid ? { color: "#d32f2f" } : {}
+          }
+        >{`*Thêm ảnh cho sản phẩm (Tối đa: 8) ${
+          !listImage.length && activeCheckValid ? "- Vui lòng chọn ảnh" : ""
+        }`}</b>
         <Stack direction="row" gap={1} flexWrap="wrap">
           {listImage.length
             ? listImage.map((img: any, i: number) => (
@@ -303,8 +413,11 @@ const CreateProduct = () => {
                 fontSize: "12px",
                 borderBottom: "1px solid #ccc",
                 height: "70px",
+                color: errors.regular_price ? "#d32f2f !important" : "unset",
               }}
               label="Chung"
+              icon={errors.regular_price ? <ErrorIcon /> : <></>}
+              iconPosition="bottom"
               {...a11yProps(0)}
             />
             <Tab
@@ -313,8 +426,11 @@ const CreateProduct = () => {
                 fontSize: "12px",
                 borderBottom: "1px solid #ccc",
                 height: "70px",
+                color: errors.sku ? "#d32f2f !important" : "unset",
               }}
               label="Kiểm kê kho hàng"
+              icon={errors.sku ? <ErrorIcon /> : <></>}
+              iconPosition="bottom"
               {...a11yProps(1)}
             />
             <Tab
@@ -323,8 +439,14 @@ const CreateProduct = () => {
                 fontSize: "12px",
                 borderBottom: "1px solid #ccc",
                 height: "70px",
+                color:
+                  errors.dimensions || errors.weight
+                    ? "#d32f2f !important"
+                    : "unset",
               }}
               label="Giao hàng"
+              icon={errors.dimensions || errors.weight ? <ErrorIcon /> : <></>}
+              iconPosition="bottom"
               {...a11yProps(2)}
             />
             <Tab
@@ -360,6 +482,9 @@ const CreateProduct = () => {
                 sx={{ width: "400px" }}
                 size="small"
                 type="number"
+                error={!!errors.regular_price}
+                helperText={errors.regular_price?.message}
+                required
               />
               <TextField
                 id="generalPrice"
@@ -376,7 +501,7 @@ const CreateProduct = () => {
                       label="Ngày bắt đầu"
                       format="DD/MM/YYYY"
                       onChange={(newDate: any) => {
-                        console.log(dayjs(newDate).format("DD/MM/YYYY"));
+                        // console.log(dayjs(newDate).format("DD/MM/YYYY"));
                         setValue(
                           "date_on_sale_from",
                           dayjs(newDate).format("DD/MM/YYYY")
@@ -388,7 +513,7 @@ const CreateProduct = () => {
                       label="Ngày kết thúc"
                       format="DD/MM/YYYY"
                       onChange={(newDate: any) => {
-                        console.log(dayjs(newDate).format("DD/MM/YYYY"));
+                        // console.log(dayjs(newDate).format("DD/MM/YYYY"));
                         setValue(
                           "date_on_sale_to",
                           dayjs(newDate).format("DD/MM/YYYY")
@@ -422,6 +547,9 @@ const CreateProduct = () => {
                 inputProps={{ ...register("sku") }}
                 sx={{ width: "400px" }}
                 size="small"
+                error={!!errors.sku}
+                helperText={errors.sku?.message}
+                required
               />
               <FormControlLabel
                 label="Theo dõi số lượng tồn kho cho sản phẩm này"
@@ -541,6 +669,9 @@ const CreateProduct = () => {
                 sx={{ width: "400px" }}
                 size="small"
                 type="number"
+                error={!!errors.weight}
+                helperText={errors.weight?.message}
+                required
               />
               <Stack direction="row" spacing={1} sx={{ width: "400px" }}>
                 <TextField
@@ -549,12 +680,18 @@ const CreateProduct = () => {
                   inputProps={{ ...register("dimensions.length") }}
                   size="small"
                   type="number"
+                  error={!!errors.dimensions?.length}
+                  helperText={errors.dimensions?.length?.message}
+                  required
                 />{" "}
                 <TextField
-                  id="weight"
+                  id="width"
                   label="Rộng(cm)"
                   inputProps={{ ...register("dimensions.width") }}
                   size="small"
+                  error={!!errors.dimensions?.width}
+                  helperText={errors.dimensions?.width?.message}
+                  required
                 />{" "}
                 <TextField
                   id="height"
@@ -562,6 +699,9 @@ const CreateProduct = () => {
                   inputProps={{ ...register("dimensions.height") }}
                   size="small"
                   type="number"
+                  error={!!errors.dimensions?.height}
+                  helperText={errors.dimensions?.height?.message}
+                  required
                 />
               </Stack>
             </Stack>
@@ -589,14 +729,47 @@ const CreateProduct = () => {
         >
           <b>Mô tả ngắn</b>
           <ReactQuill
-            modules={{ toolbar: toolbarOptions }}
+            modules={{
+              toolbar: {
+                container: toolbarOptions,
+                handlers: {
+                  image: imageHandler2,
+                },
+              },
+              clipboard: {
+                matchVisual: false,
+              },
+            }}
+            ref={quillRef2}
             theme="snow"
             value={shortDescription}
             onChange={setShortDescription}
           />
         </Stack>
-        <Box sx={{ flex: 1, p: 2, border: "1px solid #ccc", borderRadius: 1 }}>
-          <b>Danh mục sản phẩm</b>
+        <Box
+          sx={{
+            flex: 1,
+            p: 2,
+            border:
+              !selectedCategory.length && activeCheckValid
+                ? "1px solid #d32f2f"
+                : "1px solid #ccc",
+            borderRadius: 1,
+          }}
+        >
+          <b
+            style={
+              !selectedCategory.length && activeCheckValid
+                ? { color: "#d32f2f" }
+                : {}
+            }
+          >
+            {`*Danh mục sản phẩm ${
+              !selectedCategory.length && activeCheckValid
+                ? "- Vui lòng chọn danh mục"
+                : ""
+            }`}
+          </b>
           <Stack sx={{ maxHeight: "600px", overflow: "auto" }}>
             {listCategories.map((cate) => (
               <FormControlLabel
@@ -605,13 +778,13 @@ const CreateProduct = () => {
                     checked={selectedCategory.includes(cate.woo_category_id)}
                     onChange={(e) => {
                       if (e.target.checked) {
-                        console.log("yolo");
+                        // console.log("yolo");
                         setSelectedCategory([
                           ...selectedCategory,
                           cate.woo_category_id,
                         ]);
                       } else {
-                        console.log("loyo");
+                        // console.log("loyo");
                         setSelectedCategory(
                           selectedCategory.filter(
                             (slcate) => slcate !== cate.woo_category_id
