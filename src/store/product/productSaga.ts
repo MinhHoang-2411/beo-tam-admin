@@ -125,6 +125,61 @@ function* handleCreateProduct(action: Action) {
   }
 }
 
+function* handleUpdateProduct(action: Action) {
+  try {
+    yield put(layoutActions.startLayoutLoading());
+    const listImgHadUrl = action.payload.listImageDetailHadUrl.map(
+      (img: any) => ({
+        src: img.preview,
+      })
+    );
+    const formdata: any = new FormData();
+    action.payload.formData.forEach((file: File) =>
+      formdata.append("files", file)
+    );
+    // console.log({ formdata });
+    if (action.payload.formData.length) {
+      const listImagesUrl: { data: any } = yield call(
+        ProductApi.uploadImages,
+        formdata
+      );
+      // console.log({ listImagesUrl });
+      const response: { data: any } = yield call(ProductApi.updateProduct, {
+        id: action.payload.id,
+        data: {
+          ...action.payload.params,
+          images: [...listImagesUrl.data.data, ...listImgHadUrl],
+        },
+      });
+    } else {
+      const response: { data: any } = yield call(ProductApi.updateProduct, {
+        id: action.payload.id,
+        data: { ...action.payload.params, images: [...listImgHadUrl] },
+      });
+    }
+    action.payload?.onNext();
+    yield put(productActions.resetTemporarylistImgUrl());
+    yield put(productActions.resetListImageDetailHadUrl());
+    yield put(productActions.getProductDetail(action.payload.id));
+    yield put(layoutActions.endLayoutLoading());
+    yield put(
+      alertActions.showAlert({
+        text: "Chỉnh sửa sản phẩm thành công",
+        type: "success",
+      })
+    );
+  } catch (error) {
+    yield put(layoutActions.endLayoutLoading());
+    yield put(productActions.createProductFailed());
+    yield put(
+      alertActions.showAlert({
+        text: "Chỉnh sửa sản phẩm thất bại",
+        type: "error",
+      })
+    );
+  }
+}
+
 function* handleDeleteListImagesWillBeDelete(action: Action) {
   try {
     yield call(ProductApi.deleteImages, action.payload);
@@ -145,6 +200,7 @@ function* watchProductFlow() {
     takeLatest(productActions.getListProducts.type, handleGetListProducts),
     takeLatest(productActions.getProductDetail.type, handleGetProductDetail),
     takeLatest(productActions.createProduct.type, handleCreateProduct),
+    takeLatest(productActions.updateProduct.type, handleUpdateProduct),
     takeLatest(productActions.getListCategory.type, handleGetListCategories),
     takeLatest(
       productActions.deleteListImageWillBeDeleteWhenCancel.type,
