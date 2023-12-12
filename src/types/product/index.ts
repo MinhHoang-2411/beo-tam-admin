@@ -44,10 +44,10 @@ export interface ProductDetail {
   _id: string;
   tax_status: string;
   tax_class: string;
-  stock_status: string;
+  stock_status: "instock" | "outofstock" | "onbackorder";
   manage_stock: boolean;
   stock_quantity: null | number;
-  backorders: string;
+  backorders: "no" | "notify" | "yes";
   backorders_allowed: boolean;
   backordered: boolean;
   low_stock_amount: null | number;

@@ -45,6 +45,10 @@ const ProductApi = {
     const url = `${URL_API_APP}product`;
     return axiosClient.post(url, params);
   },
+  updateProduct(params: any) {
+    const url = `${URL_API_APP}product/${params.id}`;
+    return axiosClient.put(url, params.data);
+  },
   uploadImages(formData: any) {
     const url = "/product/images";
     return axiosClient.post(url, formData, {

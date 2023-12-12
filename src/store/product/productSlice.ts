@@ -11,11 +11,13 @@ interface orderState {
   loadingGetDetailProduct: boolean;
   pagination: null | Pagination;
   temporarylistImgUrl: any[];
+  listImageDetailHadUrl: any[];
   listImgUrls: any[];
   isUploadImgs: boolean;
   loadingCreateProduct: boolean;
   listImageWillBeDeleteWhenCancel: any[];
   loadingDeleteListImageWillBeDeleteWhenCancel: boolean;
+  loadingUpdateProduct: boolean;
 }
 
 const initialState: orderState = {
@@ -32,6 +34,8 @@ const initialState: orderState = {
   loadingCreateProduct: false,
   listImageWillBeDeleteWhenCancel: [],
   loadingDeleteListImageWillBeDeleteWhenCancel: false,
+  listImageDetailHadUrl: [],
+  loadingUpdateProduct: false,
 };
 
 const product = createSlice({
@@ -86,6 +90,16 @@ const product = createSlice({
       state.loadingCreateProduct = false;
     },
 
+    updateProduct(state, action) {
+      state.loadingUpdateProduct = true;
+    },
+    updateProductSuccess(state) {
+      state.loadingUpdateProduct = false;
+    },
+    updateProductFailed(state) {
+      state.loadingUpdateProduct = false;
+    },
+
     settemporarylistImgUrl(state, action) {
       state.temporarylistImgUrl = action.payload;
     },
@@ -102,6 +116,21 @@ const product = createSlice({
     },
     resetTemporarylistImgUrl(state) {
       state.temporarylistImgUrl = [];
+    },
+
+    plusImageDetailHadUrl(state, action) {
+      state.listImageDetailHadUrl = [
+        ...state.listImageDetailHadUrl,
+        ...action.payload,
+      ];
+    },
+    deleteImageDetailHadUrll(state, action) {
+      state.listImageDetailHadUrl = [...state.listImageDetailHadUrl].filter(
+        (item) => item.preview !== action.payload.preview
+      );
+    },
+    resetListImageDetailHadUrl(state) {
+      state.listImageDetailHadUrl = [];
     },
 
     uploadImages(state, action) {

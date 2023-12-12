@@ -11,6 +11,11 @@ import { productActions } from "../../../store/product/productSlice";
 import { convertNumberFormat } from "../../../utils/numberFormat";
 import { removeHTMLTags } from "../../../utils/removeHtmlTag";
 import { CustomTabPanel, a11yProps } from "../../../utils/tab";
+import CustomButton from "../../../components/share/CustomButton";
+import EditIcon from "@mui/icons-material/Edit";
+import CloseIcon from "@mui/icons-material/Close";
+import EditProduct from "./EditProduct";
+import { Product } from "../../../types/product";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -21,6 +26,15 @@ const ProductDetail = () => {
   );
   const [urlSelected, setUrlSelected] = useState(product?.images[0]?.src);
   const [valueTab, setValueTab] = useState(0);
+  const [isUpdate, setIsUpdate] = useState(false);
+
+  //handleUpdate
+  const openUpdate = () => {
+    setIsUpdate(true);
+  };
+  const closeUpdate = () => {
+    setIsUpdate(false);
+  };
 
   //tab
   const handleChangeValueTab = (
@@ -47,124 +61,167 @@ const ProductDetail = () => {
   return loadingProductDetail ? (
     <LoadingPage />
   ) : (
-    <Grid sx={{ width: "100%" }} p={2} container columnSpacing={4}>
-      <Grid item xs={12} sx={{ mb: 2 }}>
+    <Box p={2}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ mb: 2 }}
+      >
         <Typography variant="h2" sx={{ fontWeight: 700 }}>
-          Thông tin sản phẩm
+          {isUpdate ? "Chỉnh sửa sản phẩm" : "Thông tin sản phẩm"}
         </Typography>
-      </Grid>
-      <Grid item xs={6}>
-        <ImageSlider
-          imagesUrl={product?.images ? product?.images : []}
-          urlSelected={urlSelected}
-          setSelected={setUrlSelected}
+        <CustomButton
+          color={isUpdate ? "error" : "primary"}
+          label={isUpdate ? "Hủy" : "Chỉnh sửa sản phẩm"}
+          Icon={isUpdate ? <CloseIcon /> : <EditIcon />}
+          onClick={isUpdate ? closeUpdate : openUpdate}
         />
-      </Grid>
-      <Grid item xs={6}>
-        <Box>
-          <Stack direction="row" alignItems="center" spacing={3}>
-            <Typography variant="h3" sx={{ fontWeight: 700 }}>
-              {product?.name}
-            </Typography>
-          </Stack>
-          <Divider sx={{ width: "35px", borderBottomWidth: "3px", my: 1 }} />
-          <Typography variant="h3" sx={{ fontWeight: 700 }}>
-            {`${convertNumberFormat(product?.price)} đ`}
-          </Typography>
-
-          <Stack spacing={2} sx={{ mt: 2 }}>
-            <TextDetail
-              label="Mô tả"
-              value={removeHTMLTags(`${product?.short_description}`)}
+      </Stack>
+      {isUpdate ? (
+        <EditProduct
+          id={id as string}
+          productDetail={product as Product}
+          handleCloseEdit={closeUpdate}
+        />
+      ) : (
+        <Grid sx={{ width: "100%" }} container columnSpacing={4}>
+          <Grid item xs={6}>
+            <ImageSlider
+              imagesUrl={product?.images ? product?.images : []}
+              urlSelected={urlSelected}
+              setSelected={setUrlSelected}
             />
-            {/* <div
+          </Grid>
+          <Grid item xs={6}>
+            <Box>
+              <Stack direction="row" alignItems="center" spacing={3}>
+                <Typography variant="h3" sx={{ fontWeight: 700 }}>
+                  {product?.name}
+                </Typography>
+              </Stack>
+              <Divider
+                sx={{ width: "35px", borderBottomWidth: "3px", my: 1 }}
+              />
+              <Typography variant="h3" sx={{ fontWeight: 700 }}>
+                {`${convertNumberFormat(product?.price)} đ`}
+              </Typography>
+
+              <Stack spacing={2} sx={{ mt: 2 }}>
+                <TextDetail
+                  label="Mô tả"
+                  value={removeHTMLTags(`${product?.short_description}`)}
+                />
+                {/* <div
               dangerouslySetInnerHTML={{
                 __html: product?.description as string,
               }}
             /> */}
 
-            <Divider />
-            <Stack spacing={1}>
-              <Typography
-                variant="h4"
-                sx={{ fontWeight: 500, color: "#4b4b4b" }}
-              >
-                Chi tiết
-              </Typography>
-              <Typography variant="h6" sx={{ color: "#767676" }}>
-                <b>Danh mục:</b>{" "}
-                {product?.categories.map((prod) => prod.name).join(", ")}
-              </Typography>
-              <Typography variant="h6" sx={{ color: "#767676" }}>
-                <b>Mã sản phẩm:</b> {product?.sku}
-              </Typography>
-              <Typography variant="h6" sx={{ color: "#767676" }}>
-                <b>Từ khóa:</b>{" "}
-                {product?.tags.map((prod) => prod.name).join(", ")}
-              </Typography>
-            </Stack>
-          </Stack>
-        </Box>
-      </Grid>
-      <Grid item xs={12} sx={{ mt: 2 }}>
-        <Box sx={{ width: "100%" }}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <Tabs value={valueTab} onChange={handleChangeValueTab}>
-              <Tab
-                sx={{ fontWeight: 800, fontSize: "14px" }}
-                label="Mô tả"
-                {...a11yProps(0)}
-              />
-              <Tab
-                label="Thông tin bổ sung"
-                sx={{ fontWeight: 800, fontSize: "14px" }}
-                {...a11yProps(1)}
-              />
-              <Tab
-                label="Đánh giá(0)"
-                sx={{ fontWeight: 800, fontSize: "14px" }}
-                {...a11yProps(2)}
-              />
-            </Tabs>
-          </Box>
-          <CustomTabPanel value={valueTab} index={0}>
-            <div
-              style={{ fontSize: "16px", fontWeight: 500, color: "#656565" }}
-              dangerouslySetInnerHTML={{
-                __html: product?.description as string,
-              }}
-            />
-          </CustomTabPanel>
-          <CustomTabPanel value={valueTab} index={1}>
-            <Stack direction="row" alignItems="center" sx={{ height: "40px" }}>
-              <Typography sx={{ flex: 1, color: "#656565" }} variant="h5">
-                <b>TRỌNG LƯỢNG</b>
-              </Typography>
-              <Typography sx={{ flex: 1, color: "#656565" }} variant="h5">
-                {product?.detail?.weight ? `${product?.detail?.weight}g` : ""}
-              </Typography>
-            </Stack>
-            <Divider />
-            <Stack direction="row" alignItems="center" sx={{ height: "40px" }}>
-              <Typography sx={{ flex: 1, color: "#656565" }} variant="h5">
-                <b>KÍCH THƯỚC</b>
-              </Typography>
-              <Typography sx={{ flex: 1, color: "#656565" }} variant="h5">
-                {product?.detail?.dimensions?.height
-                  ? `${product?.detail?.dimensions?.width} x ${product?.detail?.dimensions?.width} x ${product?.detail?.dimensions?.height} cm`
-                  : ""}
-              </Typography>
-            </Stack>
-            <Divider />
-          </CustomTabPanel>
-          <CustomTabPanel value={valueTab} index={2}>
-            <p style={{ fontSize: "16px", fontWeight: 500, color: "#656565" }}>
-              Hiện chưa có đánh giá nào
-            </p>
-          </CustomTabPanel>
-        </Box>
-      </Grid>
-    </Grid>
+                <Divider />
+                <Stack spacing={1}>
+                  <Typography
+                    variant="h4"
+                    sx={{ fontWeight: 500, color: "#4b4b4b" }}
+                  >
+                    Chi tiết
+                  </Typography>
+                  <Typography variant="h6" sx={{ color: "#767676" }}>
+                    <b>Danh mục:</b>{" "}
+                    {product?.categories.map((prod) => prod.name).join(", ")}
+                  </Typography>
+                  <Typography variant="h6" sx={{ color: "#767676" }}>
+                    <b>Mã sản phẩm:</b> {product?.sku}
+                  </Typography>
+                  <Typography variant="h6" sx={{ color: "#767676" }}>
+                    <b>Từ khóa:</b>{" "}
+                    {product?.tags.map((prod) => prod.name).join(", ")}
+                  </Typography>
+                </Stack>
+              </Stack>
+            </Box>
+          </Grid>
+          <Grid item xs={12} sx={{ mt: 2 }}>
+            <Box sx={{ width: "100%" }}>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <Tabs value={valueTab} onChange={handleChangeValueTab}>
+                  <Tab
+                    sx={{ fontWeight: 800, fontSize: "14px" }}
+                    label="Mô tả"
+                    {...a11yProps(0)}
+                  />
+                  <Tab
+                    label="Thông tin bổ sung"
+                    sx={{ fontWeight: 800, fontSize: "14px" }}
+                    {...a11yProps(1)}
+                  />
+                  <Tab
+                    label="Đánh giá(0)"
+                    sx={{ fontWeight: 800, fontSize: "14px" }}
+                    {...a11yProps(2)}
+                  />
+                </Tabs>
+              </Box>
+              <CustomTabPanel value={valueTab} index={0}>
+                <div
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    color: "#656565",
+                  }}
+                  dangerouslySetInnerHTML={{
+                    __html: product?.description as string,
+                  }}
+                />
+              </CustomTabPanel>
+              <CustomTabPanel value={valueTab} index={1}>
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  sx={{ height: "40px" }}
+                >
+                  <Typography sx={{ flex: 1, color: "#656565" }} variant="h5">
+                    <b>TRỌNG LƯỢNG</b>
+                  </Typography>
+                  <Typography sx={{ flex: 1, color: "#656565" }} variant="h5">
+                    {product?.detail?.weight
+                      ? `${product?.detail?.weight}g`
+                      : ""}
+                  </Typography>
+                </Stack>
+                <Divider />
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  sx={{ height: "40px" }}
+                >
+                  <Typography sx={{ flex: 1, color: "#656565" }} variant="h5">
+                    <b>KÍCH THƯỚC</b>
+                  </Typography>
+                  <Typography sx={{ flex: 1, color: "#656565" }} variant="h5">
+                    {product?.detail?.dimensions?.height
+                      ? `${product?.detail?.dimensions?.width} x ${product?.detail?.dimensions?.width} x ${product?.detail?.dimensions?.height} cm`
+                      : ""}
+                  </Typography>
+                </Stack>
+                <Divider />
+              </CustomTabPanel>
+              <CustomTabPanel value={valueTab} index={2}>
+                <p
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    color: "#656565",
+                  }}
+                >
+                  Hiện chưa có đánh giá nào
+                </p>
+              </CustomTabPanel>
+            </Box>
+          </Grid>
+        </Grid>
+      )}
+    </Box>
   );
 };
 
