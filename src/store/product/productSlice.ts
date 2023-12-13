@@ -18,6 +18,7 @@ interface orderState {
   listImageWillBeDeleteWhenCancel: any[];
   loadingDeleteListImageWillBeDeleteWhenCancel: boolean;
   loadingUpdateProduct: boolean;
+  loadingDeleteProduct: boolean;
 }
 
 const initialState: orderState = {
@@ -36,6 +37,7 @@ const initialState: orderState = {
   loadingDeleteListImageWillBeDeleteWhenCancel: false,
   listImageDetailHadUrl: [],
   loadingUpdateProduct: false,
+  loadingDeleteProduct: false,
 };
 
 const product = createSlice({
@@ -98,6 +100,16 @@ const product = createSlice({
     },
     updateProductFailed(state) {
       state.loadingUpdateProduct = false;
+    },
+
+    deleteProduct(state, action) {
+      state.loadingDeleteProduct = true;
+    },
+    deleteProductSuccess(state) {
+      state.loadingDeleteProduct = false;
+    },
+    deleteProductFailed(state) {
+      state.loadingDeleteProduct = false;
     },
 
     settemporarylistImgUrl(state, action) {

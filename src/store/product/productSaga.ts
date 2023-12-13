@@ -195,12 +195,39 @@ function* handleDeleteListImagesWillBeDelete(action: Action) {
   }
 }
 
+function* handleDeleteProduct(action: Action) {
+  try {
+    yield put(layoutActions.startLayoutLoading());
+    yield call(ProductApi.deleteProduct, action.payload);
+    yield put(productActions.deleteProductSuccess());
+    yield put(productActions.getListProducts({}));
+    yield put(layoutActions.endLayoutLoading());
+
+    yield put(
+      alertActions.showAlert({
+        text: "Xóa sản phẩm thành công",
+        type: "success",
+      })
+    );
+  } catch (error) {
+    yield put(productActions.deleteProductFailed());
+    yield put(layoutActions.endLayoutLoading());
+    yield put(
+      alertActions.showAlert({
+        text: "Xóa sản phẩm thất bại",
+        type: "error",
+      })
+    );
+  }
+}
+
 function* watchProductFlow() {
   yield all([
     takeLatest(productActions.getListProducts.type, handleGetListProducts),
     takeLatest(productActions.getProductDetail.type, handleGetProductDetail),
     takeLatest(productActions.createProduct.type, handleCreateProduct),
     takeLatest(productActions.updateProduct.type, handleUpdateProduct),
+    takeLatest(productActions.deleteProduct.type, handleDeleteProduct),
     takeLatest(productActions.getListCategory.type, handleGetListCategories),
     takeLatest(
       productActions.deleteListImageWillBeDeleteWhenCancel.type,

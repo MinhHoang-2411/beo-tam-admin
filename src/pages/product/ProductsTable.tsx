@@ -33,6 +33,7 @@ import { Product } from "../../types/product";
 import { convertNumberFormat } from "../../utils/numberFormat";
 import { useNavigate } from "react-router-dom";
 import ChipProductType from "../../components/Chip/ChipProduct";
+import { productActions } from "../../store/product/productSlice";
 
 export default function ProductsTable() {
   const navigate = useNavigate();
@@ -75,7 +76,8 @@ export default function ProductsTable() {
       title: "Xác nhận",
       content: <span>Bạn có chắc chắc muốn xóa sản phẩm này không ?</span>,
       onAction: () => {
-        console.log("yolo");
+        console.log({ data });
+        dispatch(productActions.deleteProduct(data._id));
       },
       buttonText: "Xóa",
     };

@@ -55,6 +55,10 @@ const ProductApi = {
       headers: { "Content-Type": "multipart/form-data" },
     });
   },
+  deleteProduct(id: any) {
+    const url = `/product/${id}`;
+    return axiosClient.delete(url);
+  },
   deleteImages(params: any) {
     const url = "/product/images";
     return axiosClient.delete(url, params);
